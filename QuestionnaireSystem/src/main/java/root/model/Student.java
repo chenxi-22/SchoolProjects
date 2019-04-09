@@ -1,64 +1,76 @@
 package root.model;
 
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Vector;
 
 public class Student extends User {
-    private int _max_course;  //学生最大选课数量, 默认为5门
-    private String [] _course; //学生所选课程
-    private int _index;  //记录当前_course最后一个元素的坐标
-    private Map<String, String[]> _questionnaireMap;   //key为课程，value为问卷
+    /**
+     * 学生最大选课数量, 默认为5门
+     */
+    private int _max_subject;
+    /**
+     * 学生所选课程
+     */
+    private Vector<String> _subject = new Vector<String>();
+    /**
+     * key为课程，value为问卷
+     */
+    private Map<String, Vector<String>> _questionnaireMap = new HashMap<String, Vector<String>>();
 
-    public Student(int max_course){
-        _max_course = max_course;
-        _course = new String[_max_course];
-        _index = 0;
+    public Student(int max_subject){
+        _max_subject = max_subject;
     }
     public Student(){
-        _max_course = 5;
-        _course = new String[_max_course];
+        _max_subject = 5;
     }
 
-    public boolean AddCourse(String item, String[] questionnaire){
-        if(_course.length == _max_course)
+    /**
+     * 添加课程,并将课程与对应的问卷作为键值对插入到map中
+     * @param //item为课程名称
+     * @param //questionnaire为该课程所对应的问卷
+     */
+    public boolean AddSubject(String item, Vector<String> questionnaire){
+        if(_subject.size() == _max_subject)
             return false;
 
-        _course[_index++] = item;
+        _subject.add(item);
         _questionnaireMap.put(item, questionnaire);
         return true;
     }
 
+    /**
+     * 删除科目，并从map中删除该键值对
+     * @param //item表示科目名称
+     */
     public boolean DelCourse(String item){
-        if(_course.length == 0)
+        if(_subject.isEmpty())
             return false;
 
-        int res = 0;
-        int flag = 0;
-        for(int i = 0; i < _course.length; ++i){
-            if(_course[i] != item){
-                _course[res++] = _course[i];
-            }
-            else{
-                flag = 1;
-                --_index;
+        if(_subject.remove(item)){
+            /**
+             * 删除成功,再去删除map中的
+             */
+            Iterator<String> iter = _questionnaireMap.keySet().iterator();
+            while (iter.hasNext()) {
 
-                Iterator<String> iter = _questionnaireMap.keySet().iterator();
-                while (iter.hasNext()) {
-
-                    String key = iter.next();
-                    if(key == item){
-                        iter.remove();
-                    }
+                String key = iter.next();
+                if(key == item){
+                    iter.remove();
                 }
             }
-
-        }
-
-        if(1 == flag)
             return true;
+        }
+        /**
+         * 否则，删除失败
+         */
         return false;
     }
 
+    /**
+     * 用来获取_questionnaireMap
+     */
     public Map GetQuestionMap(){ return _questionnaireMap; }
 
 }
