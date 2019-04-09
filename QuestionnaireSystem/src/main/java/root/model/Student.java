@@ -13,11 +13,11 @@ public class Student extends User {
     /**
      * 学生所选课程
      */
-    private Vector<String> _subject = new Vector<String>();
+    private Vector<String> _subjects = new Vector<>();
     /**
      * key为课程，value为问卷
      */
-    private Map<String, Vector<String>> _questionnaireMap = new HashMap<String, Vector<String>>();
+    private Map<String, Vector<String>> _questionnaireMap = new HashMap<>();
 
     public Student(int max_subject){
         _max_subject = max_subject;
@@ -32,10 +32,10 @@ public class Student extends User {
      * @param //questionnaire为该课程所对应的问卷
      */
     public boolean AddSubject(String item, Vector<String> questionnaire){
-        if(_subject.size() == _max_subject)
+        if(_subjects.size() == _max_subject)
             return false;
 
-        _subject.add(item);
+        _subjects.add(item);
         _questionnaireMap.put(item, questionnaire);
         return true;
     }
@@ -45,10 +45,10 @@ public class Student extends User {
      * @param //item表示科目名称
      */
     public boolean DelCourse(String item){
-        if(_subject.isEmpty())
+        if(_subjects.isEmpty())
             return false;
 
-        if(_subject.remove(item)){
+        if(_subjects.remove(item)){
             /**
              * 删除成功,再去删除map中的
              */
@@ -56,7 +56,7 @@ public class Student extends User {
             while (iter.hasNext()) {
 
                 String key = iter.next();
-                if(key == item){
+                if(key.equals(item)){
                     iter.remove();
                 }
             }
@@ -73,4 +73,7 @@ public class Student extends User {
      */
     public Map GetQuestionMap(){ return _questionnaireMap; }
 
+    public void setSubjects(Vector<String> subjects) {
+        _subjects = subjects;
+    }
 }
