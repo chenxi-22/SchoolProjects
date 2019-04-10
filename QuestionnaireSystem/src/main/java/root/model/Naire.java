@@ -14,6 +14,12 @@ public class Naire {
      */
     private String subject;
 
+
+    /**
+     * 是否催交问卷
+     */
+    private int ispress;
+
     /**
      * 问卷内容，两个其实一样都是问题，一个是全部问题
      * 存到一个String，每个问题间用'\3'分隔，另一个是
@@ -61,5 +67,13 @@ public class Naire {
 
     public void setStudents(List<String> students) {
         this.students = students;
+    }
+
+    public int getIspress() {
+        return ispress;
+    }
+
+    public void setIspress(int ispress) {
+        this.ispress = ispress;
     }
 }

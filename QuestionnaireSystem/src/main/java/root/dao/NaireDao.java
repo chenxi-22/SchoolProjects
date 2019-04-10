@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import root.Util.StringAndListUtil;
 import root.model.Naire;
 
@@ -102,6 +103,30 @@ public class NaireDao {
         List<String> tmp = naire.getQuestionnaires();
         String questionnaires = StringAndListUtil.listToStr(tmp);
         jdbcTemplate.update(sql, questionnaires, subject);
+        return true;
+    }
+
+    /**
+     * 获取是否催交
+     * @param naire
+     * @return
+     */
+    public Integer getPress(Naire naire) {
+        String sql = "SELECT ispress FROM questionnaire_system.naires WHERE subject=?";
+        String subject = naire.getSubject();
+        Integer press = jdbcTemplate.queryForObject(sql, new Object[]{ subject }, Integer.class);
+        return press;
+    }
+
+    /**
+     * 设置催交 press
+     * @param naire
+     * @return
+     */
+    public boolean UpdatePress(Naire naire) {
+        String sql = "UPDATE questionnaire_system.naires SET questionnaires=1 WHERE subject=?";
+        String subject = naire.getSubject();
+        jdbcTemplate.update(sql, subject);
         return true;
     }
 
