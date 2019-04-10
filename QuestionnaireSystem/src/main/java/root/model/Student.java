@@ -1,13 +1,25 @@
 package root.model;
 
+import lombok.Data;
+
 import java.util.List;
 import java.util.Vector;
 
+@Data
 public class Student{
     private String id;
     private String password;
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     private List<String> subjects = new Vector<>();
-    private List<String> uncompletes = new Vector<>();
 
     public String getId() {
         return id;
@@ -31,13 +43,5 @@ public class Student{
 
     public void setSubjects(List<String> subjects) {
         this.subjects= subjects;
-    }
-
-    public void setUncompletes(List<String> uncompletes) {
-        this.uncompletes = uncompletes;
-    }
-
-    public List<String> getUncompletes() {
-        return uncompletes;
     }
 }

@@ -1,13 +1,18 @@
 package root.model;
 
+import lombok.Data;
 
+@Data
 public class Teacher{
     /**
-     * 账号，密码
+     * 账号
      */
     private String id;
-    private String password;
 
+    /**
+     * 密码
+     */
+    private String password;
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
