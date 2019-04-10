@@ -1,79 +1,23 @@
 package root.model;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Vector;
 
-public class Student extends User {
+
+public class Student{
     /**
-     * 学生最大选课数量, 默认为5门
+     * 学号，密码
      */
-    private int _max_subject;
+    private String id;
+    private String password;
     /**
-     * 学生所选课程
+     * 学生已选科目
      */
-    private Vector<String> _subjects = new Vector<>();
-    /**
-     * key为课程，value为问卷
-     */
-    private Map<String, Vector<String>> _questionnaireMap = new HashMap<>();
+    private String hasSubject;
 
-    public Student(int max_subject){
-        _max_subject = max_subject;
-    }
-    public Student(){
-        _max_subject = 5;
-    }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+    public String getPWD() { return password; }
+    public void setPWD(String password) { this.password = password; }
+    public String getHasSubject() { return hasSubject; }
+    public void setHasSubject(String hasSubject) { this.hasSubject = hasSubject; }
 
-    /**
-     * 添加课程,并将课程与对应的问卷作为键值对插入到map中
-     * @param //item为课程名称
-     * @param //questionnaire为该课程所对应的问卷
-     */
-    public boolean AddSubject(String item, Vector<String> questionnaire){
-        if(_subjects.size() == _max_subject)
-            return false;
-
-        _subjects.add(item);
-        _questionnaireMap.put(item, questionnaire);
-        return true;
-    }
-
-    /**
-     * 删除科目，并从map中删除该键值对
-     * @param //item表示科目名称
-     */
-    public boolean DelCourse(String item){
-        if(_subjects.isEmpty())
-            return false;
-
-        if(_subjects.remove(item)){
-            /**
-             * 删除成功,再去删除map中的
-             */
-            Iterator<String> iter = _questionnaireMap.keySet().iterator();
-            while (iter.hasNext()) {
-
-                String key = iter.next();
-                if(key.equals(item)){
-                    iter.remove();
-                }
-            }
-            return true;
-        }
-        /**
-         * 否则，删除失败
-         */
-        return false;
-    }
-
-    /**
-     * 用来获取_questionnaireMap
-     */
-    public Map GetQuestionMap(){ return _questionnaireMap; }
-
-    public void setSubjects(Vector<String> subjects) {
-        _subjects = subjects;
-    }
 }
