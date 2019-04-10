@@ -1,11 +1,10 @@
 package root.model;
 
-import lombok.Data;
 
 import java.util.List;
 import java.util.Vector;
 
-@Data
+
 public class Student{
     private String id;
     private String password;

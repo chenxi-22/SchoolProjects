@@ -1,16 +1,13 @@
 package root.model;
 
 
-import lombok.Data;
-
-import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
 /**
  * 问卷
  */
-@Data
+
 public class Naire {
     /**
      * 科目名称

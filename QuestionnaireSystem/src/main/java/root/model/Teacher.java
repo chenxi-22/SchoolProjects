@@ -1,8 +1,6 @@
 package root.model;
 
-import lombok.Data;
 
-@Data
 public class Teacher{
     /**
      * 账号
