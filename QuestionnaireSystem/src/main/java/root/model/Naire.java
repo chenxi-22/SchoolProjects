@@ -40,26 +40,4 @@ public class Naire {
     public String getQuestionnairesStr() { return questionnairesStr; }
 
     public void setQuestionnairesStr(String questionnairesStr) { this.questionnairesStr = questionnairesStr; }
-
-    public static List<String> strToList(String questionnairesStr){
-        String[] tmp = questionnairesStr.split("\3");
-        return Arrays.asList(tmp);
-
-    }
-    public static String listToStr(List<String> questionnairesList){
-        String res = null;
-        int flag = 0;
-        String split = "\3";
-        for(String str : questionnairesList) {
-            if(0 == flag){
-                res = str;
-                flag = 1;
-            }
-           else{
-                res = res + split + str;
-            }
-        }
-
-        return res;
-    }
 }
