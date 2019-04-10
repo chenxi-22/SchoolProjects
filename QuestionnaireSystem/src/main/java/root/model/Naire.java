@@ -1,5 +1,9 @@
 package root.model;
 
+
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * 问卷
  */
@@ -10,9 +14,12 @@ public class Naire {
     private String subject;
 
     /**
-     * 问卷内容
+     * 问卷内容，两个其实一样都是问题，一个是全部问题
+     * 存到一个String，每个问题间用'\3'分隔，另一个是
+     * 每一个问题存为一个String，全部问题组成一个List
      */
-    private String questionnaires;
+    private List<String> questionnairesList;
+    private String questionnairesStr;
 
     public String getSubject() {
         return subject;
@@ -22,11 +29,37 @@ public class Naire {
         this.subject = subject;
     }
 
-    public String getQuestionnaires() {
-        return questionnaires;
+    public List<String> getQuestionnairesList() {
+        return questionnairesList;
     }
 
-    public void setQuestionnaires(String questionnaires) {
-        this.questionnaires = questionnaires;
+    public void setQuestionnairesList(List<String> questionnairesList) {
+        this.questionnairesList = questionnairesList;
+    }
+
+    public String getQuestionnairesStr() { return questionnairesStr; }
+
+    public void setQuestionnairesStr(String questionnairesStr) { this.questionnairesStr = questionnairesStr; }
+
+    public static List<String> strToList(String questionnairesStr){
+        String[] tmp = questionnairesStr.split("\3");
+        return Arrays.asList(tmp);
+
+    }
+    public static String listToStr(List<String> questionnairesList){
+        String res = null;
+        int flag = 0;
+        String split = "\3";
+        for(String str : questionnairesList) {
+            if(0 == flag){
+                res = str;
+                flag = 1;
+            }
+           else{
+                res = res + split + str;
+            }
+        }
+
+        return res;
     }
 }
