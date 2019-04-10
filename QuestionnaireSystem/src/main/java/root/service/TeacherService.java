@@ -1,10 +1,10 @@
 package root.service;
 
-import root.dao.NaireDao;
+import root.dao.TeacherDao;
 import root.model.Naire;
 import root.model.Teacher;
 
-import java.awt.image.RescaleOp;
+
 import java.util.*;
 
 public class TeacherService {
@@ -12,7 +12,7 @@ public class TeacherService {
      *
      */
     private Teacher teacher;
-    private NaireDao naireDao;
+    private TeacherDao teacherDao;
 
     /**
      * 用来保存答案数量
@@ -32,6 +32,12 @@ public class TeacherService {
      * 课程列表，static类型，所有管理员看到的是同一份
      */
     private static List<String> subjectsList;
+    /**
+     * 用来初始化静态变量subjectList
+     */
+    static{
+
+    }
 
     /**
      * key为课程，value为问卷
@@ -45,6 +51,12 @@ public class TeacherService {
 
     public TeacherService(int max_question_count){ maxQuestionCount = max_question_count; }
     public TeacherService(){ maxQuestionCount = 20; }
+
+    public boolean Login(String id, String password){
+        teacher.setId(id);
+        teacher.setPassword(password);
+        return teacherDao.isExist(teacher);
+    }
 
 
     private boolean IsSubExit(String subject){
@@ -73,19 +85,22 @@ public class TeacherService {
         if(IsLegal(subject)){
             return false;
         }
-        else if(questionnaireMap.get(subject).getQuestionnairesList().size() >= maxQuestionCount){
+        else if(questionnaireMap.get(subject).getQuestionnaires().size() >= maxQuestionCount){
             return false;
         }
         else{
-            questionnaireMap.get(subject).getQuestionnairesList().add(question);
+            questionnaireMap.get(subject).getQuestionnaires().add(question);
             /**
              * 添加成功后，更新到数据库
              * 如果是第一次，需要设置naire中的subject
              */
-            if(1 == questionnaireMap.get(subject).getQuestionnairesList().size()){
+            if(1 == questionnaireMap.get(subject).getQuestionnaires().size()){
                 questionnaireMap.get(subject).setSubject(subject);
             }
-            // TODO 数据库操作
+            /**
+             * 数据库操作--传naire对象
+             */
+            teacherDao.UpdateQuestions(questionnaireMap.get(subject));
         }
         return true;
     }
@@ -101,15 +116,15 @@ public class TeacherService {
         if(IsLegal(subject)){
             return false;
         }
-        else if(questionnaireMap.get(subject).getQuestionnairesList().size() <= 0){
+        else if(questionnaireMap.get(subject).getQuestionnaires().size() <= 0){
             return false;
         }
         else{
-            questionnaireMap.get(subject).getQuestionnairesList().remove(question);
+            questionnaireMap.get(subject).getQuestionnaires().remove(question);
             /**
              * 删除成功，更新数据库
              */
-            // TODO 数据库操作
+            teacherDao.UpdateQuestions(questionnaireMap.get(subject));
         }
         return true;
     }
@@ -130,14 +145,14 @@ public class TeacherService {
         }
 
         srcId -= 1;
-        if(srcId < 0 || srcId >= questionnaireMap.get(subject).getQuestionnairesList().size())
+        if(srcId < 0 || srcId >= questionnaireMap.get(subject).getQuestionnaires().size())
             return false;
 
-        questionnaireMap.get(subject).getQuestionnairesList().set(srcId, subject);
+        questionnaireMap.get(subject).getQuestionnaires().set(srcId, subject);
         /**
          * 修改成功，更新数据库
          */
-        //TODO 数据库操作
+        teacherDao.UpdateQuestions(questionnaireMap.get(subject));
         return true;
     }
 

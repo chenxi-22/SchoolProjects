@@ -5,9 +5,10 @@ import root.dao.StudentDao;
 import root.model.Naire;
 import root.model.Student;
 
-import java.util.*;
+import java.util.List;
 
 import static root.Util.StringAndListUtil.strToList;
+
 
 public class StudentService {
 
@@ -31,24 +32,35 @@ public class StudentService {
         maxSubject = 5;
     }
 
+    public boolean Login(String id, String password){
+        student.setId(id);
+        student.setPassword(password);
+        return studentDao.isExist(student);
+    }
+
     /**
      * 添加课程,并将课程与对应的问卷作为键值对插入到map中
      * @param //item为课程名称
      */
-    public boolean AddSubject(String item){
-        if(student.getSubjects().size() == maxSubject)
+    public boolean AddSubject(String id, String item){
+        /**
+         * 从数据库拿到对应学生的subjectList
+         */
+        student.setId(id);
+        List<String> subjectsListTmp = studentDao.getSubjects(student);
+        if(subjectsListTmp.size() == maxSubject)
             return false;
         /**
          * 是否已经添加该课程
          */
-        if(student.getSubjects().indexOf(item) != -1)
+        if(subjectsListTmp.indexOf(item) != -1)
             return false;
-        student.getSubjects().add(item);
-
-        //TODO
+        subjectsListTmp.add(item);
+        student.setSubjects(subjectsListTmp);
         /**
          * 添加成功后更新到数据库
          */
+        studentDao.UpdateSubjects(student);
         return true;
     }
 
@@ -56,15 +68,19 @@ public class StudentService {
      * 删除科目，并从map中删除该键值对
      * @param //item表示科目名称
      */
-    public boolean DelCourse(String item){
-        if(student.getSubjects().isEmpty())
-            return false;
+    public boolean DelCourse(String id, String item){
+        /**
+         * 从数据库拿到对应学生的subjectList
+         */
+        student.setId(id);
+        List<String> subjectsListTmp = studentDao.getSubjects(student);
 
-        if(student.getSubjects().remove(item)){
-            //TODO
+        if(subjectsListTmp.remove(item)){
+            student.setSubjects(subjectsListTmp);
             /**
              * 删除成功后更新到数据库
              */
+            studentDao.UpdateSubjects(student);
             return true;
         }
         /**
@@ -76,9 +92,14 @@ public class StudentService {
     /**
      * 查看学生所选课程
      */
-    public  List<String> getSubjects()
-    {
-        return student.getSubjects();
+    public  List<String> getSubjects(String id){
+        /**
+         * 从数据库拿到对应学生的subjectList
+         */
+        student.setId(id);
+        List<String> subjectsListTmp = studentDao.getSubjects(student);
+
+        return subjectsListTmp;
     }
 
     /**
@@ -91,7 +112,10 @@ public class StudentService {
          * 从数据库拉取问卷信息
          * 保存在成员变量naire中
          */
-        naire.setQuestionnairesList(strToList(naireDao.getQuestionnaires(naire)));
-        return naire.getQuestionnairesList();
+        naire.setQuestionnaires(strToList(naireDao.getQuestionnaires(naire)));
+        return naire.getQuestionnaires();
     }
+
+
+
 }
