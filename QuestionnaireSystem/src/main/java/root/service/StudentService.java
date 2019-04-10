@@ -7,7 +7,7 @@ import root.model.Student;
 
 import java.util.*;
 
-import static root.model.Util.strToList;
+import static root.Util.StringAndListUtil.strToList;
 
 public class StudentService {
 
@@ -36,14 +36,14 @@ public class StudentService {
      * @param //item为课程名称
      */
     public boolean AddSubject(String item){
-        if(student.getSubjectsList().size() == maxSubject)
+        if(student.getSubjects().size() == maxSubject)
             return false;
         /**
          * 是否已经添加该课程
          */
-        if(student.getSubjectsList().indexOf(item) != -1)
+        if(student.getSubjects().indexOf(item) != -1)
             return false;
-        student.getSubjectsList().add(item);
+        student.getSubjects().add(item);
 
         //TODO
         /**
@@ -57,10 +57,10 @@ public class StudentService {
      * @param //item表示科目名称
      */
     public boolean DelCourse(String item){
-        if(student.getSubjectsList().isEmpty())
+        if(student.getSubjects().isEmpty())
             return false;
 
-        if(student.getSubjectsList().remove(item)){
+        if(student.getSubjects().remove(item)){
             //TODO
             /**
              * 删除成功后更新到数据库
@@ -76,8 +76,9 @@ public class StudentService {
     /**
      * 查看学生所选课程
      */
-    public  List<String> getSubjects(){
-        return student.getSubjectsList();
+    public  List<String> getSubjects()
+    {
+        return student.getSubjects();
     }
 
     /**
@@ -93,7 +94,4 @@ public class StudentService {
         naire.setQuestionnairesList(strToList(naireDao.getQuestionnaires(naire)));
         return naire.getQuestionnairesList();
     }
-
-
-
 }

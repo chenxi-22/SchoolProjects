@@ -3,10 +3,10 @@ package root.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import root.Util.StringAndListUtil;
 import root.model.Student;
 
-import java.util.Arrays;
-import java.util.Vector;
+import java.util.List;
 
 @Repository
 public class StudentDao {
@@ -24,11 +24,29 @@ public class StudentDao {
         return false;
     }
 
-    public Vector<String> getSubjects(Student student) {
+    public List<String> getSubjects(Student student) {
         String sql = "SELECT subjects FROM questionnaire_system.students WHERE id=?";
         String id = student.getId();
         String result = jdbcTemplate.queryForObject(sql, new Object[]{ id }, String.class);
-        Vector<String> subjects = new Vector<String>(Arrays.asList(result.split("\\,")));
+        List<String> subjects = StringAndListUtil.strToList(result);
         return subjects;
+    }
+
+    public boolean UpdateSubjects(Student student) {
+        String sql = "UPDATE questionnaire_system.students SET subjects=? WHERE id=?";
+        String id = student.getId();
+        List<String> tmp = student.getSubjects();
+        String subjects = StringAndListUtil.listToStr(tmp);
+        jdbcTemplate.update(sql, subjects, id);
+        return true;
+    }
+
+    public boolean UpdateUnComplete(Student student) {
+        String sql = "UPDATE questionnaire_system.students SET uncomplete=? WHERE id=?";
+        String id = student.getId();
+        List<String> tmp = student.getUncompletes();
+        String uncompletes = StringAndListUtil.listToStr(tmp);
+        jdbcTemplate.update(sql, uncompletes, id);
+        return true;
     }
 }

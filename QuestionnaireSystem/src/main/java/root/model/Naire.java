@@ -18,8 +18,7 @@ public class Naire {
      * 存到一个String，每个问题间用'\3'分隔，另一个是
      * 每一个问题存为一个String，全部问题组成一个List
      */
-    private List<String> questionnairesList;
-    private String questionnairesStr;
+    private List<String> questionnaires;
 
     public String getSubject() {
         return subject;
@@ -29,15 +28,12 @@ public class Naire {
         this.subject = subject;
     }
 
-    public List<String> getQuestionnairesList() {
-        return questionnairesList;
+    public List<String> getQuestionnaires() {
+        return questionnaires;
     }
 
-    public void setQuestionnairesList(List<String> questionnairesList) {
-        this.questionnairesList = questionnairesList;
+    public void setQuestionnaires(List<String> questionnairesList) {
+        this.questionnaires = questionnaires;
     }
 
-    public String getQuestionnairesStr() { return questionnairesStr; }
-
-    public void setQuestionnairesStr(String questionnairesStr) { this.questionnairesStr = questionnairesStr; }
 }
