@@ -6,6 +6,7 @@ import root.model.Naire;
 import root.model.Student;
 
 import java.util.List;
+import java.util.Vector;
 
 import static root.Util.StringAndListUtil.strToList;
 
@@ -23,56 +24,141 @@ public class StudentService {
     private Naire naire;
     private StudentDao studentDao;
     private NaireDao naireDao;
+    /**
+     * 学生未选的课程列表
+     */
+    private List<String> unCompleteSubjectsList;
 
 
     public StudentService(int max_subject){
         maxSubject = max_subject;
+        unCompleteSubjectsList = naireDao.getAllSubjects();
     }
     public StudentService(){
         maxSubject = 5;
+        unCompleteSubjectsList = naireDao.getAllSubjects();
     }
 
-    public boolean Login(String id, String password){
-        student.setId(id);
-        student.setPassword(password);
-        return studentDao.isExist(student);
+    private List<String> GetPressSubjectList(){
+        /**
+         * 保存naireDao中IsPress为1的科目列表
+         */
+        List<String> pressSubjectList = new Vector<String>();
+        /**
+         * 保存最后该student需要催缴的科目列表
+         */
+        List<String> pressSubjectResList = new Vector<String>();
+        /**
+         * 拿到所选的课程，首先判断naireDao
+         * 中subject对应的IsPress是否为0，
+         * 如果为0，则不用，否则需要催缴
+         */
+        List<String> subjectListTmp = studentDao.getSubjects(student);
+        for(String str : subjectListTmp) {
+            naire.setSubject(str);
+            if(naireDao.getPress(naire) == 1){
+                pressSubjectList.add(str);
+            }
+        }
+        /**
+         * 根据pressSubjectList，去naireDao中根据课程名拿到
+         * 未完成的学生名单与之相比，如果姓名与自己相同，则需要
+         * 进行催缴，保存到pressSubjectResList
+         */
+        for(String str : pressSubjectList) {
+            naire.setSubject(str);
+            List<String> uncompletesListTmp = naireDao.getUncompletes(naire);
+            if(uncompletesListTmp.indexOf(student.getName()) != -1){
+                pressSubjectResList.add(str);
+            }
+        }
+       return pressSubjectResList;
     }
 
     /**
-     * 添加课程,并将课程与对应的问卷作为键值对插入到map中
+     * 学生登陆，并在内部判断是否有需要催缴的课程
+     * @return 如果没有需要催缴的课程，返回值为
+     * null，否则，返回需要催缴的课程列表
+     */
+    public List<String> Login(String id, String password){
+        student.setId(id);
+        student.setPassword(password);
+        if(studentDao.isExist(student) == null)
+            return null;
+
+        student = studentDao.isExist(student);
+        /**
+         * 催缴问卷,拿到催缴课程的列表，若为空，则不需要催缴
+         */
+        List<String> pressSubjectList = GetPressSubjectList();
+
+        return pressSubjectList;
+    }
+
+    /**
+     * 添加课程
      * @param //item为课程名称
      */
-    public boolean AddSubject(String id, String item){
+    public List<String> AddSubject(String item){
         /**
          * 从数据库拿到对应学生的subjectList
          */
-        student.setId(id);
+        student.setId(student.getId());
         List<String> subjectsListTmp = studentDao.getSubjects(student);
         if(subjectsListTmp.size() == maxSubject)
-            return false;
+            return null;
         /**
          * 是否已经添加该课程
          */
         if(subjectsListTmp.indexOf(item) != -1)
-            return false;
+            return null;
+        /**
+         * 未选课程列表中是否存在
+         */
+        if(unCompleteSubjectsList.indexOf(item) == -1)
+            return null;
+
+        /**
+         * 从未选课程列表中将该课程删除
+         */
+        unCompleteSubjectsList.remove(item);
+
         subjectsListTmp.add(item);
         student.setSubjects(subjectsListTmp);
         /**
          * 添加成功后更新到数据库
          */
         studentDao.UpdateSubjects(student);
-        return true;
+        /**
+         * 还要将学生姓名添加到naireDao中
+         * 首先，拿到naireDao中的学生姓名List
+         * 然后将该学生姓名添加到List，最后将
+         * List更新到naireDao中
+         */
+        naire.setSubject(item);
+        List<String> listTmp = naireDao.getStudents(naire);
+        listTmp.add(student.getName());
+        naire.setStudents(listTmp);
+        naireDao.UpdateStudents(naire);
+
+        /**
+         * 也需要跟新naireDao中的未完成学生名单
+         */
+        listTmp = naireDao.getUncompletes(naire);
+        listTmp.add(student.getName());
+        naireDao.UpdateUncompletes(naire);
+        return unCompleteSubjectsList;
     }
 
     /**
-     * 删除科目，并从map中删除该键值对
+     * 删除科目
      * @param //item表示科目名称
      */
-    public boolean DelCourse(String id, String item){
+    public boolean DelCourse(String item){
         /**
          * 从数据库拿到对应学生的subjectList
          */
-        student.setId(id);
+        student.setId(student.getId());
         List<String> subjectsListTmp = studentDao.getSubjects(student);
 
         if(subjectsListTmp.remove(item)){
@@ -81,6 +167,24 @@ public class StudentService {
              * 删除成功后更新到数据库
              */
             studentDao.UpdateSubjects(student);
+            /**
+             * 还要将学生姓名从naireDao中删除
+             * 首先，拿到naireDao中的学生姓名List
+             * 然后将该学生姓名从List中删除，最后将
+             * List更新到naireDao中
+             */
+            naire.setSubject(item);
+            List<String> listTmp = naireDao.getStudents(naire);
+            listTmp.remove(student.getName());
+            naire.setStudents(listTmp);
+            naireDao.UpdateStudents(naire);
+
+            /**
+             * 也需要跟新naireDao中的未完成学生名单
+             */
+            listTmp = naireDao.getUncompletes(naire);
+            listTmp.remove(student.getName());
+            naireDao.UpdateUncompletes(naire);
             return true;
         }
         /**
@@ -92,11 +196,10 @@ public class StudentService {
     /**
      * 查看学生所选课程
      */
-    public  List<String> getSubjects(String id){
+    public  List<String> getSubjects(){
         /**
          * 从数据库拿到对应学生的subjectList
          */
-        student.setId(id);
         List<String> subjectsListTmp = studentDao.getSubjects(student);
 
         return subjectsListTmp;
@@ -115,7 +218,5 @@ public class StudentService {
         naire.setQuestionnaires(strToList(naireDao.getQuestionnaires(naire)));
         return naire.getQuestionnaires();
     }
-
-
 
 }

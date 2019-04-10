@@ -1,5 +1,6 @@
 package root.service;
 
+import root.dao.NaireDao;
 import root.dao.TeacherDao;
 import root.model.Naire;
 import root.model.Teacher;
@@ -13,6 +14,8 @@ public class TeacherService {
      */
     private Teacher teacher;
     private TeacherDao teacherDao;
+    private NaireDao naireDao;
+    private Naire naire;
 
     /**
      * 用来保存答案数量
@@ -27,17 +30,11 @@ public class TeacherService {
      */
     private int maxQuestionCount;
     private static int staticMaxQuestionCount;
-    //TODO 需要导入课程列表
-    /**
-     * 课程列表，static类型，所有管理员看到的是同一份
-     */
-    private static List<String> subjectsList;
-    /**
-     * 用来初始化静态变量subjectList
-     */
-    static{
 
-    }
+    /**
+     * 课程列表，所有管理员都一样
+     */
+    private List<String> subjectsList;
 
     /**
      * key为课程，value为问卷
@@ -49,8 +46,14 @@ public class TeacherService {
      */
     private static Map<String, List<ResCount>> resCountMap = new HashMap<>();
 
-    public TeacherService(int max_question_count){ maxQuestionCount = max_question_count; }
-    public TeacherService(){ maxQuestionCount = 20; }
+    public TeacherService(int max_question_count){
+        maxQuestionCount = max_question_count;
+        subjectsList = naireDao.getAllSubjects();
+    }
+    public TeacherService(){
+        maxQuestionCount = 20;
+        subjectsList = naireDao.getAllSubjects();
+    }
 
     public boolean Login(String id, String password){
         teacher.setId(id);
@@ -70,6 +73,32 @@ public class TeacherService {
         if((questionnaireMap.get(subject) != null) && (IsSubExit(subject)))
             return true;
         return false;
+    }
+
+    /**
+     * 获取选课信息，也就是说返回当前
+     * 已有课程，每门课都有哪些学生选了
+     */
+    public Map<String, List<String>> getSubjectInfo(){
+        Map<String, List<String>> resMap = new HashMap<String, List<String>>();
+        for(String str : subjectsList) {
+            naire.setSubject(str);
+            resMap.put(str, naireDao.getStudents(naire));
+        }
+
+        return resMap;
+    }
+
+    /**
+     * 催缴问卷
+     */
+    public void PressQuestionnaire(String subject){
+        /**
+         * 将naireDao中subject对应的IsPress设置为1表示
+         * 催缴问卷，学生在登陆时，需要检测自己IsPress
+         */
+        naire.setSubject(subject);
+        naireDao.UpdatePress(naire);
     }
 
     /**
@@ -100,7 +129,7 @@ public class TeacherService {
             /**
              * 数据库操作--传naire对象
              */
-            teacherDao.UpdateQuestions(questionnaireMap.get(subject));
+            naireDao.UpdateQuestions(questionnaireMap.get(subject));
         }
         return true;
     }
@@ -124,7 +153,7 @@ public class TeacherService {
             /**
              * 删除成功，更新数据库
              */
-            teacherDao.UpdateQuestions(questionnaireMap.get(subject));
+            naireDao.UpdateQuestions(questionnaireMap.get(subject));
         }
         return true;
     }
@@ -152,7 +181,7 @@ public class TeacherService {
         /**
          * 修改成功，更新数据库
          */
-        teacherDao.UpdateQuestions(questionnaireMap.get(subject));
+        naireDao.UpdateQuestions(questionnaireMap.get(subject));
         return true;
     }
 
@@ -163,12 +192,16 @@ public class TeacherService {
             return false;
         return true;
     }
+    // TODO 需要拿到前端问题的答案，回答问题的人需要从naireDao中的Uncompelete名单中删除
+    public void AnswerQuestion(String subject){
+
+    }
 
     /**
      * 给问卷中某个问题的答案（是或否）+1
      * @param id //表示问卷中问题的编号,从1开始
      */
-    public static boolean AddResultCount(String subject, int id, int answer){
+    private static boolean AddResultCount(String subject, int id, int answer){
         /**
          * 因为数组下标从0开始，所以这里-1，方便判断
          */
@@ -193,6 +226,7 @@ public class TeacherService {
         else{
             ++resCountMap.get(subject).get(id)._noCount;
         }
+
 
         return true;
     }
