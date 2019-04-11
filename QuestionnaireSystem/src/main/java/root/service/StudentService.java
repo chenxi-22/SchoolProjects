@@ -39,7 +39,10 @@ public class StudentService {
         unCompleteSubjectsList = naireDao.getAllSubjects();
     }
 
-    private List<String> GetPressSubjectList(){
+    /**
+     * 用来获取需要催缴问卷的课程列表
+     */
+    public List<String> getPressSubjectList(){
         /**
          * 保存naireDao中IsPress为1的科目列表
          */
@@ -80,19 +83,12 @@ public class StudentService {
      * @return 如果没有需要催缴的课程，返回值为
      * null，否则，返回需要催缴的课程列表
      */
-    public List<String> Login(String id, String password){
+    public boolean Login(String id, String password){
         student.setId(id);
         student.setPassword(password);
         if(studentDao.isExist(student) == null)
-            return null;
-
-        student = studentDao.isExist(student);
-        /**
-         * 催缴问卷,拿到催缴课程的列表，若为空，则不需要催缴
-         */
-        List<String> pressSubjectList = GetPressSubjectList();
-
-        return pressSubjectList;
+            return false;
+        return true;
     }
 
     /**
