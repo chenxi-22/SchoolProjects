@@ -1,5 +1,8 @@
 package root.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import root.dao.NaireDao;
 import root.dao.TeacherDao;
 import root.model.Naire;
@@ -9,13 +12,17 @@ import root.model.Teacher;
 
 import java.util.*;
 
+@Service
+@Transactional
 public class TeacherService {
-    /**
-     *
-     */
     private Teacher teacher;
+
+    @Autowired
     private TeacherDao teacherDao;
+
+    @Autowired
     private NaireDao naireDao;
+
     private Naire naire;
 
 

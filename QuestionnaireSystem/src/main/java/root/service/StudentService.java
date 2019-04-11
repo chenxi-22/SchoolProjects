@@ -1,22 +1,22 @@
 package root.service;
 
-import com.sun.org.apache.regexp.internal.RE;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import root.dao.NaireDao;
 import root.dao.StudentDao;
 import root.model.Naire;
 import root.model.ResCount;
 import root.model.Student;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
 import static root.Util.StringAndListUtil.strToList;
 
-
+@Service
+@Transactional
 public class StudentService {
-
     /**
      * 学生最大选课数量, 默认为5门
      */
@@ -26,13 +26,16 @@ public class StudentService {
      */
     private Student student;
     private Naire naire;
+
+    @Autowired
     private StudentDao studentDao;
+
+    @Autowired
     private NaireDao naireDao;
     /**
      * 学生未选的课程列表
      */
     private List<String> unCompleteSubjectsList;
-
 
     public StudentService(int max_subject){
         maxSubject = max_subject;

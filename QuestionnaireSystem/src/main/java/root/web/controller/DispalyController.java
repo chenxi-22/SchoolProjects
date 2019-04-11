@@ -9,6 +9,8 @@ import org.springframework.web.servlet.ModelAndView;
 import root.service.StudentService;
 import root.service.TeacherService;
 
+import java.util.List;
+
 @Controller
 public class DispalyController {
     @Autowired
@@ -30,16 +32,48 @@ public class DispalyController {
 
     /**
      * 登录操作处理
-     * TODO
      * @return
      */
     @RequestMapping(value = {"/login"}, method = {RequestMethod.POST})
-    public ModelAndView Login(@RequestParam(value = "id") String id, @RequestParam(value = "password") String password) {
+    public ModelAndView Login(@RequestParam(value = "id") String id, @RequestParam(value = "password") String password, @RequestParam(value = "identity") String identity) {
         ModelAndView modelAndView = new ModelAndView();
         /**
          * 如果登录成功，判断该用户是学生还是老师，根据不同的身份，来返回不同的界面
          * 如果该用户是学生，那么这里返回 student.jsp，如果是老师返回 teacher.jsp
          */
+        if (identity.equals("student")) {
+            boolean res = studentService.Login(id, password);
+            if (res == false) {
+                modelAndView.setViewName("loginfailed");
+            } else {
+                List<String> press = studentService.getPressSubjectList();
+                if (press == null) {
+                    modelAndView.setViewName("student");
+                } else {
+                    modelAndView.setViewName("press");
+                }
+            }
+        } else {
+            boolean res = teacherService.Login(id, password);
+            if (res == false) {
+                modelAndView.setViewName("loginfailed");
+            } else {
+                modelAndView.setViewName("teacher");
+            }
+            return modelAndView;
+        }
+        return modelAndView;
+    }
+
+    @RequestMapping(value = {"/student"}, method = {RequestMethod.GET})
+    public ModelAndView StudentHome() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("student");
+        // if (studentService.isExist() != null) {
+        //     modelAndView.setViewName("student");
+        // } else {
+        //     modelAndView.setViewName("again_login");
+        // }
         return modelAndView;
     }
 
