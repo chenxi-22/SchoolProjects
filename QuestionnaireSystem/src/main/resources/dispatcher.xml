@@ -15,7 +15,7 @@
         <property name="suffix" value=".jsp"/>
     </bean>
 
-    <context:component-scan base-package="root.web.controller"/>
+    <context:component-scan base-package="root.web.controller"></context:component-scan>
 
     <!--启动 Spring MVC 的注解功能，主动注册HandlerMapping,HandlerAdapter,ExceptionResolver的实例-->
     <mvc:annotation-driven/>
