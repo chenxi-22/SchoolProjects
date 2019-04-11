@@ -79,14 +79,12 @@ public class StudentService {
     }
 
     /**
-     * 学生登陆，并在内部判断是否有需要催缴的课程
-     * @return 如果没有需要催缴的课程，返回值为
-     * null，否则，返回需要催缴的课程列表
+     * 学生登陆
      */
     public boolean Login(String id, String password){
         student.setId(id);
         student.setPassword(password);
-        if(studentDao.isExist(student) == null)
+        if((student = studentDao.isExist(student)) == null)
             return false;
         return true;
     }
