@@ -9,14 +9,15 @@ import org.springframework.web.servlet.ModelAndView;
 import root.service.StudentService;
 import root.service.TeacherService;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @Controller
 public class DispalyController {
-    @Autowired
+    @Autowired(required =  false)
     private StudentService studentService;
 
-    @Autowired
+    @Autowired(required =  false)
     private TeacherService teacherService;
 
     /**
