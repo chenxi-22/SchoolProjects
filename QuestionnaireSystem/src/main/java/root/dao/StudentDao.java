@@ -2,13 +2,14 @@ package root.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import root.Util.StringAndListUtil;
 import root.model.Student;
 
 import java.util.List;
 
-@Repository
+@Component
 public class StudentDao {
 
     @Autowired
