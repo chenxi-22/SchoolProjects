@@ -1,11 +1,15 @@
 package root.service;
 
+import com.sun.org.apache.regexp.internal.RE;
 import root.dao.NaireDao;
 import root.dao.StudentDao;
 import root.model.Naire;
+import root.model.ResCount;
 import root.model.Student;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import static root.Util.StringAndListUtil.strToList;
@@ -187,6 +191,8 @@ public class StudentService {
         return false;
     }
 
+    public List<String> getUnCompleteSubjectsList() { return unCompleteSubjectsList; }
+    public boolean isExist() { return student != null;}
     /**
      * 查看学生所选课程
      */
@@ -213,4 +219,13 @@ public class StudentService {
         return naire.getQuestionnaires();
     }
 
+    /**
+     * 查看结果
+     * 这里返回该学生所选的某一门课程
+     * 对应问卷的结果
+     */
+    public List<ResCount> getSutdentNaireRes(String item){
+        List<ResCount> resCountList = TeacherService.getResultCouont(item);
+        return resCountList;
+    }
 }

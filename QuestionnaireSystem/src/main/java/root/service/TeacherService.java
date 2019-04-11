@@ -3,6 +3,7 @@ package root.service;
 import root.dao.NaireDao;
 import root.dao.TeacherDao;
 import root.model.Naire;
+import root.model.ResCount;
 import root.model.Teacher;
 
 
@@ -17,13 +18,6 @@ public class TeacherService {
     private NaireDao naireDao;
     private Naire naire;
 
-    /**
-     * 用来保存答案数量
-     */
-    private class ResCount{
-        public int _yesCount;
-        public int _noCount;
-    }
 
     /**
      * 每个问卷默认问题数量最大为20
@@ -234,7 +228,7 @@ public class TeacherService {
     /**
      * 重置（归零）某一个科目问卷的统计结果
      */
-    public static boolean ResetResultCount(String subject){
+    public static boolean resetResultCount(String subject){
         if(resCountMap.get(subject) == null)
             return false;
         /**
@@ -251,7 +245,7 @@ public class TeacherService {
     /**
      * 获取某一个科目问卷的统计结果（是或否的统计数量）
      */
-    public static List<ResCount> GetResultCouont(String subject){
+    public static List<ResCount> getResultCouont(String subject){
         return resCountMap.get(subject);
     }
 }
