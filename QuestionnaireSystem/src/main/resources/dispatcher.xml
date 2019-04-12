@@ -24,5 +24,9 @@
 
     <!--启动 Spring MVC 的注解功能，主动注册HandlerMapping,HandlerAdapter,ExceptionResolver的实例-->
     <mvc:annotation-driven/>
+    <mvc:resources mapping="/js/**" location="/js/"/>
+    <mvc:resources mapping="/css/**" location="/css/"/>
+    <mvc:resources mapping="/fonts/**" location="/fonts"/>
+    <mvc:resources mapping="/images/**" location="/images/"/>
 
 </beans>
