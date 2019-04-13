@@ -9,15 +9,14 @@ import org.springframework.web.servlet.ModelAndView;
 import root.service.StudentService;
 import root.service.TeacherService;
 
-import javax.annotation.Resource;
 import java.util.List;
 
-@Controller
+@Controller("displayController")
 public class DispalyController {
-    @Autowired(required =  false)
+    @Autowired
     private StudentService studentService;
 
-    @Autowired(required =  false)
+    @Autowired
     private TeacherService teacherService;
 
     /**
@@ -49,7 +48,7 @@ public class DispalyController {
             } else {
                 List<String> press = studentService.getPressSubjectList();
                 if (press == null) {
-                    modelAndView.setViewName("student");
+                    modelAndView.setViewName("Student");
                 } else {
                     modelAndView.setViewName("press");
                 }
@@ -59,7 +58,7 @@ public class DispalyController {
             if (res == false) {
                 modelAndView.setViewName("loginfailed");
             } else {
-                modelAndView.setViewName("teacher");
+                modelAndView.setViewName("Teacher");
             }
             return modelAndView;
         }

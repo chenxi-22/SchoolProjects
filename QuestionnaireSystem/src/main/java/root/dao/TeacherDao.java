@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import root.model.Teacher;
 
-@Component
+@Repository
 public class TeacherDao {
     @Autowired
     private JdbcTemplate jdbcTemplate;

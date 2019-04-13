@@ -10,13 +10,13 @@ import root.model.Naire;
 import root.model.ResCount;
 import root.model.Student;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Vector;
 
 import static root.Util.StringAndListUtil.strToList;
 
 @Service
-@Transactional
 public class StudentService {
     /**
      * 学生最大选课数量, 默认为5门
@@ -25,8 +25,8 @@ public class StudentService {
     /**
      * 学生对象、问卷对象、问卷数据库对象及，学生数据库对象
      */
-    private Student student;
-    private Naire naire;
+    private Student student = new Student();
+    private Naire naire = new Naire();
 
     @Autowired
     private StudentDao studentDao;
@@ -36,17 +36,13 @@ public class StudentService {
     /**
      * 学生未选的课程列表
      */
-    private List<String> unCompleteSubjectsList;
+    private List<String> unCompleteSubjectsList = new Vector<>();
 
-    public StudentService(int max_subject){
-        maxSubject = max_subject;
-        unCompleteSubjectsList = naireDao.getAllSubjects();
-    }
-    public StudentService(){
+    @PostConstruct
+    public void init(){
         maxSubject = 5;
         unCompleteSubjectsList = naireDao.getAllSubjects();
     }
-
     /**
      * 用来获取需要催缴问卷的课程列表
      */
@@ -65,6 +61,9 @@ public class StudentService {
          * 如果为0，则不用，否则需要催缴
          */
         List<String> subjectListTmp = studentDao.getSubjects(student);
+        if (subjectListTmp == null) {
+            return null;
+        }
         for(String str : subjectListTmp) {
             naire.setSubject(str);
             if(naireDao.getPress(naire) == 1){

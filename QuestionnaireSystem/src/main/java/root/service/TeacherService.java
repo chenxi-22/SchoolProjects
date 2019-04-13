@@ -11,10 +11,10 @@ import root.model.ResCount;
 import root.model.Teacher;
 
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Service
-@Transactional
 public class TeacherService {
     private Teacher teacher;
 
@@ -24,7 +24,7 @@ public class TeacherService {
     @Autowired
     private NaireDao naireDao;
 
-    private Naire naire;
+    private Naire naire = new Naire();
 
 
     /**
@@ -36,7 +36,7 @@ public class TeacherService {
     /**
      * 课程列表，所有管理员都一样
      */
-    private List<String> subjectsList;
+    private List<String> subjectsList = new Vector<>();
 
     /**
      * key为课程，value为问卷
@@ -48,11 +48,8 @@ public class TeacherService {
      */
     private static Map<String, List<ResCount>> resCountMap = new HashMap<>();
 
-    public TeacherService(int max_question_count){
-        maxQuestionCount = max_question_count;
-        subjectsList = naireDao.getAllSubjects();
-    }
-    public TeacherService(){
+    @PostConstruct
+    public void init(){
         maxQuestionCount = 20;
         subjectsList = naireDao.getAllSubjects();
     }

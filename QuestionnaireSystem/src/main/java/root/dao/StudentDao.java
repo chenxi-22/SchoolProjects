@@ -9,7 +9,7 @@ import root.model.Student;
 
 import java.util.List;
 
-@Component
+@Repository
 public class StudentDao {
 
     @Autowired
@@ -44,6 +44,9 @@ public class StudentDao {
         String sql = "SELECT subjects FROM questionnaire_system.students WHERE id=?";
         String id = student.getId();
         String result = jdbcTemplate.queryForObject(sql, new Object[]{ id }, String.class);
+        if (result == null) {
+            return null;
+        }
         List<String> subjects = StringAndListUtil.strToList(result);
         return subjects;
     }
