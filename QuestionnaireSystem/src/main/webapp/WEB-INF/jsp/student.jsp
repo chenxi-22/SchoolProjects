@@ -13,10 +13,54 @@
 <link rel="stylesheet" href="/css/index.css" />
 <script type="text/javascript">
 
-	function func(type) {
-	    if (type == "添加") {
+	function addSubject(id, arr) {
+	    var subject = arr[id];
+		var xmlhttp;
 
+		if (window.XMLHttpRequest)
+		{
+			// IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+			xmlhttp=new XMLHttpRequest();
 		}
+		else
+		{
+			// IE6, IE5 浏览器执行代码
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		xmlhttp.onreadystatechange=function()
+		{
+			if (xmlhttp.readyState==4 && xmlhttp.status==200)
+			{
+				var result = xmlhttp.responseText;
+				alert("hehehehe");
+
+				if (result == "nosubjects") {
+					document.getElementById("myDiv").innerHTML="好学的你已经选择了所有课程哦！";
+					return;
+				}
+
+				if (result == "choosefailed") {
+				    alert("选课失败，请重新选择！");
+				    var type = "添加 +";
+					var table = createTable(700, 130, 3, arr, type);
+					document.getElementById("myDiv").innerHTML="以下课程可选择:";
+					$("#myDiv").append(table);
+					return;
+				}
+
+				alert("选课成功！");
+				var arr = result.split("\3");
+				var type = "添加 +";
+				var table = createTable(700, 130, 3, arr, type);
+				document.getElementById("myDiv").innerHTML="以下课程可选择:";
+				$("#myDiv").append(table);
+			} else {
+				document.getElementById("myDiv").innerHTML=result;
+			}
+		}
+		// 发送 GET 请求，带参数 subject
+		xmlhttp.open("GET","/add?subject=" + subject, false);
+		xmlhttp.send();
 	}
 
 	/**
@@ -35,17 +79,15 @@
 	    table.style.height = height;
 	    table.style.border = 4;
 
-	    var but;
 	    var td;
 
 	    for (var i = 0; i < arr.length; i++) {
 	    	var tr = document.createElement("tr");
 	    	for (var j = 0; j < line; ++j) {
 	    	    td = document.createElement("td");
-	    	    but = document.createElement("input");
+	    	    var but = document.createElement("input");
 	    	    but.type = "button";
 	    	    but.value = type;
-	    	    but.addEventListener("click", func);
 				but.setAttribute("onmouseover","style.backgroundColor='#A9A9A9'");
 				but.setAttribute("onmouseout","style.backgroundColor='#9ACD32'");
 				but.style.color = "white";
@@ -57,8 +99,14 @@
 				but.style.width = "75px";
 				but.style.height = "25px";
 
+				// js 的闭包问题，需要注意，必须以下面的解法来解决闭包问题
+				(function(i){
+				    but.onclick = function() {
+				        addSubject(i, arr);
+					}
+				})(i);
 
-	    		if (j == 0) {
+				if (j == 0) {
 	    		    td.innerHTML = "科目";
 	    		    td.style.textAlign = "center";
 	    		    td.style.color = "#292929";
