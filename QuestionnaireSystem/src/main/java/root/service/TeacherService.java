@@ -80,6 +80,7 @@ public class TeacherService {
      */
     public Map<String, List<String>> getSubjectInfo(){
         Map<String, List<String>> resMap = new HashMap<String, List<String>>();
+
         for(String str : subjectsList) {
             naire.setSubject(str);
             resMap.put(str, naireDao.getStudents(naire));

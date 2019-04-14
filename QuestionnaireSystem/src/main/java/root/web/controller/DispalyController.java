@@ -1,5 +1,6 @@
 package root.web.controller;
 
+import com.mysql.jdbc.StringUtils;
 import com.mysql.jdbc.jmx.ReplicationGroupManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,7 +14,10 @@ import root.service.StudentService;
 import root.service.TeacherService;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 @Controller("displayController")
 public class DispalyController {
@@ -61,8 +65,6 @@ public class DispalyController {
         } else {
             System.out.println("teacher");
             boolean res = teacherService.Login(id, password);
-            System.out.println(res);
-            System.out.println("#######################################################");
             if (res == false) {
                 modelAndView.setViewName("loginfailed");
             } else {
@@ -71,6 +73,10 @@ public class DispalyController {
         }
         return modelAndView;
     }
+
+    /**
+     * 学生管理
+     */
 
     /**
      * 查看能够添加的课程
@@ -98,4 +104,54 @@ public class DispalyController {
         return StringAndListUtil.listToStr(canDelete);
     }
 
+    /**
+     * 老师管理
+     */
+
+    /**
+     * 导入选课信息
+     * @return
+     */
+    @RequestMapping(value = "/loadsubjects", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
+    @ResponseBody
+    public String LoadSbjects() {
+
+        Map<String, List<String>> subjectInfoMap = teacherService.getSubjectInfo();
+        String resString = new String();
+        if (subjectInfoMap == null) {
+            return "没有科目";
+        }
+
+        int flag = 0;
+        String split = "\4";
+        for (String key : subjectInfoMap.keySet()) {
+            if (subjectInfoMap.get(key) == null) {
+                String tmp = key;
+                tmp = tmp + ":没有任何学生选择该科目";
+                if(0 == flag){
+                    resString = tmp;
+                    flag = 1;
+                }
+                else{
+                    resString = resString + split + tmp;
+                }
+            }
+            else{
+                String tmp = key;
+                tmp = tmp + ":" + subjectInfoMap.get(key);
+                if(0 == flag){
+                    resString = tmp;
+                    flag = 1;
+                }
+                else{
+                    resString = resString + split + tmp;
+                }
+            }
+        }
+        return resString;
 }
+
+}
+
+
+
