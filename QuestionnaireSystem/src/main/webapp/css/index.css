@@ -147,3 +147,15 @@ ul {
     margin-left: 400px;
     margin-top: 20px; 
 }
+
+.but1{
+  color: white;
+  font-size: 12px;
+  background:  #292929;
+  cursor: pointer;
+  border-color: #D3D3D3;
+  height: 30px;
+  width: 60px;
+  margin: 10px 10px;
+  text-align: center;
+}

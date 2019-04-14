@@ -12,7 +12,72 @@
 
 <link rel="stylesheet" href="/css/index.css" />
 <script type="text/javascript">
+
+	function func(type) {
+	    if (type == "添加") {
+
+		}
+	}
+
+	/**
+	 * 创建表格
+	 * @param width 宽度
+	 * @param height 高度
+	 * @param line 列数
+	 * @param arr 表内数据
+	 * @param type button 类型名
+	 */
+	function createTable(width, height, line, arr, type) {
+	    var table = document.createElement("table");
+	    var tbody = document.createElement("tbody");
+
+	    table.width = width;
+	    table.height = height;
+	    table.style.border = 1;
+
+	    var but;
+	    var td;
+
+	    for (var i = 0; i < arr.length; i++) {
+	    	var tr = document.createElement("tr");
+	    	for (var j = 0; j < line; ++j) {
+	    	    td = document.createElement("td");
+	    	    but = document.createElement("input");
+	    	    but.type = "button";
+	    	    but.value = type;
+	    	    but.addEventListener("click", func);
+				but.setAttribute("onmouseover","style.backgroundColor='#A9A9A9'");
+				but.setAttribute("onmouseout","style.backgroundColor='#292929'");
+				but.style.color = "white";
+				but.style.fontSize = "12px";
+				but.style.backgroundColor = "#292929";
+				but.style.borderColor = "#D3D3D3";
+				but.style.cursor = "pointer";
+				but.style.margin = "7px 5px 7px 0px";
+
+
+	    		if (j == 0) {
+	    		    td.innerHTML = "科目";
+	    		    td.style.textAlign = "center";
+	    		    td.style.color = "#292929";
+				} else if (j == 1) {
+	    		    td.innerHTML = arr[i];
+					td.style.textAlign = "center";
+					td.style.color = "#292929";
+				}
+	    		tr.appendChild(td);
+			}
+	    	td.appendChild(but);
+	    	tbody.appendChild(tr);
+		}
+	    table.appendChild(tbody);
+	    tbody.style.backgroundColor = "#F0FBCD";
+	    table.style.margin = "80px 120px";
+	    return table;
+	}
+
 	function loadXMLDoc(e) {
+	    $("#myDiv").empty();
 		var type=e.getAttribute("data-type");
 		var xmlhttp;
 		if (window.XMLHttpRequest)
@@ -33,10 +98,24 @@
 			{
 				if (xmlhttp.readyState==4 && xmlhttp.status==200)
 				{
+					/**
+					 * 这个 result 是一个 String,里面的各种科目是由 '\3' 分隔
+					 * @type {string}
+					 */
 					var result = xmlhttp.responseText;
-					arr = result.split("\3");
-					display = arr[0] + "\r" + arr[1] + "\r" + arr[2];
-					document.getElementById("myDiv").innerHTML=display;
+					if (result == "nosubjects") {
+						document.getElementById("myDiv").innerHTML="好学的你已经选择了所有课程哦！";
+					    return;
+					}
+					var arr = result.split("\3");
+					/**
+					 * arr.length 就可以获取到分隔后的元素每一个元素就是一个科目
+					 * @type {string}
+					 */
+					var type = "添加 +";
+					var table = createTable(500, 500, 3, arr, type);
+					document.getElementById("myDiv").innerHTML="以下课程可选择:";
+					$("#myDiv").append(table);
 				}
 			}
 			xmlhttp.open("GET","/canadd",false);
