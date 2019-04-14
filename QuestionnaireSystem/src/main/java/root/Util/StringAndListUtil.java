@@ -50,8 +50,8 @@ public class StringAndListUtil {
             }else if(str.charAt(i) == tmp1.charAt(0)){ }
             else{
                 res = res + str.charAt(i);
-            }
-        }
+            }        }
+
         return res;
     }
 

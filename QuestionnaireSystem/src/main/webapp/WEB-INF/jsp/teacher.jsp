@@ -51,6 +51,79 @@
 		xmlhttp.send();
 	}
 
+	function addNaire(id, arr) {
+		var subject = arr[id];
+		var xmlhttp;
+		if (window.XMLHttpRequest)
+		{
+			// IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+			xmlhttp=new XMLHttpRequest();
+		}
+		else
+		{
+			// IE6, IE5 浏览器执行代码
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		xmlhttp.onreadystatechange=function()
+		{
+			var result = xmlhttp.responseText;
+			//alert("hehehehe");
+			if (xmlhttp.readyState==4 && xmlhttp.status==200)
+			{
+				var result = xmlhttp.responseText;
+				alert("添加问卷");
+
+				if (result == "false") {
+					alert("添加失败！");
+					return;
+				}
+				alert("添加成功！");
+				document.getElementById("myDiv").innerHTML="催缴成功！";
+			} else {
+
+				document.getElementById("myDiv").innerHTML="催缴失败！";
+			}
+		}
+		// 发送 GET 请求，带参数 subject
+		xmlhttp.open("GET","/pressNaire?subject=" + subject, false);
+		xmlhttp.send();
+	}
+
+	function getResultCount(id, arr) {
+		var subject = arr[id];
+		var xmlhttp;
+		if (window.XMLHttpRequest)
+		{
+			// IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+			xmlhttp=new XMLHttpRequest();
+		}
+		else
+		{
+			// IE6, IE5 浏览器执行代码
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		xmlhttp.onreadystatechange=function()
+		{
+			if (xmlhttp.readyState==4 && xmlhttp.status==200)
+			{
+				var result = xmlhttp.responseText;
+				alert("统计结果");
+
+				if (result == "false") {
+					alert("统计失败！");
+					return;
+				}
+				alert("统计成功！");
+				document.getElementById("myDiv").innerHTML="统计成功！";
+			} else {
+
+				document.getElementById("myDiv").innerHTML="统计失败！";
+			}
+		}
+		// 发送 GET 请求，带参数 subject
+		xmlhttp.open("GET","/pressNaire?subject=" + subject, false);
+		xmlhttp.send();
+	}
 	/**
 	 * 创建表格
 	 * @param width 宽度
@@ -104,7 +177,7 @@
 	 * @param arr 表内数据
 	 * @param type button 类型名
 	 */
-	function createTable(width, height, line, arr, type) {
+	function createTable(width, height, line, arr, type, flag) {
 		var table = document.createElement("table");
 		var tbody = document.createElement("tbody");
 		table.style.width = width;
@@ -131,7 +204,24 @@
 				// js 的闭包问题，需要注意，必须以下面的解法来解决闭包问题
 				(function(i){
 					but.onclick = function() {
-						pressNaire(i, arr);
+						if(flag == 0)//催缴问卷
+						{
+							pressNaire(i, arr);
+						}
+						else if(flag == 1) //添加问卷
+						{
+							addNaire(i, arr);
+						}
+						else if(flag == 2) //统计结果
+						{
+							getResultCount(i, arr);
+						}
+						else if(flag == 3) //
+						{
+
+						}
+
+
 					}
 				})(i);
 				if (j == 0) {
@@ -177,7 +267,8 @@
 			xmlhttp.onreadystatechange=function()
 			{
 				/**
-				 * 这个 result 是一个 String,里面的各种科目是由 '\3' 分隔
+				 * 这个 result 是一个 String,科目与学生名单间用':'分隔
+				 * 学生与学生之间用'\3'分隔，每行之间用'\4'分隔
 				 * @type {string}
 				 */
 				var result = xmlhttp.responseText;
@@ -207,8 +298,8 @@
 				 * arr.length 就可以获取到分隔后的元素每一个元素就是一个科目
 				 * @type {string}
 				 */
-				var type = "添加 +";
-				var table = createTable(700, 130, 3, arr, type);
+				var type = "催缴 +";
+				var table = createTable(700, 130, 3, arr, type, 0);
 				document.getElementById("myDiv").innerHTML="选择需要催缴的课程:";
 				$("#myDiv").append(table);
 			}
@@ -218,11 +309,19 @@
 			document.getElementById("myDiv").innerHTML=type;
 			xmlhttp.onreadystatechange=function()
 			{
-				if (xmlhttp.readyState==4 && xmlhttp.status==200)
-				{
-					var result = xmlhttp.responseText;
-					document.getElementById("myDiv").innerHTML=result;
-				}
+				/**
+				 * 这个 result 是一个 String,里面的各种科目是由 '\3' 分隔
+				 */
+				var result = xmlhttp.responseText;
+
+				var arr = result.split("\3");
+				/**
+				 * arr.length 就可以获取到分隔后的元素每一个元素就是一个科目
+				 */
+				var type = "添加 +";
+				var table = createTable(700, 130, 3, arr, type, 1);
+				document.getElementById("myDiv").innerHTML="选择需要添加问卷的课程:";
+				$("#myDiv").append(table);
 			}
 			xmlhttp.open("GET", "/addnaires", false);
 			xmlhttp.send();
@@ -231,8 +330,19 @@
 			{
 				if (xmlhttp.readyState==4 && xmlhttp.status==200)
 				{
+					/**
+					 * 这个 result 是一个 String,里面的各种科目是由 '\3' 分隔
+					 */
 					var result = xmlhttp.responseText;
-					document.getElementById("myDiv").innerHTML=result;
+
+					var arr = result.split("\3");
+					/**
+					 * arr.length 就可以获取到分隔后的元素每一个元素就是一个科目
+					 */
+					var type = "统计 +";
+					var table = createTable(700, 130, 3, arr, type, 2);
+					document.getElementById("myDiv").innerHTML="选择需要统计结果的课程:";
+					$("#myDiv").append(table);
 				}
 			}
 			xmlhttp.open("GET", "/getResultCount", false);
@@ -242,8 +352,19 @@
 			{
 				if (xmlhttp.readyState==4 && xmlhttp.status==200)
 				{
+					/**
+					 * 这个 result 是一个 String,里面的各种科目是由 '\3' 分隔
+					 */
 					var result = xmlhttp.responseText;
-					document.getElementById("myDiv").innerHTML=result;
+
+					var arr = result.split("\3");
+					/**
+					 * arr.length 就可以获取到分隔后的元素每一个元素就是一个科目
+					 */
+					var type = "guan +";
+					var table = createTable(700, 130, 3, arr, type, 3);
+					document.getElementById("myDiv").innerHTML="选择需要管理题目的课程:";
+					$("#myDiv").append(table);
 				}
 			}
 			xmlhttp.open("GET", "/questionmanager", false);
