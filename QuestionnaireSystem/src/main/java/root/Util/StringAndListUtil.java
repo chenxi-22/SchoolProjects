@@ -26,4 +26,33 @@ public class StringAndListUtil {
 
         return res;
     }
+
+    /**
+     * 去除方括号
+     */
+    public static String removeBracket(String str)
+    {
+        String removeString = "[";
+        str = str.replace(removeString, "");
+        removeString = "]";
+        str = str.replace(removeString, "");
+        return str;
+    }
+
+    public static String Replace3To(String str){
+
+        String res = new String();
+        String tmp = "\\";
+        String tmp1 = "3";
+        for(int i=0;i < str.length();i++) {
+            if(str.charAt(i) == tmp.charAt(0)){
+                res = res + ",";
+            }else if(str.charAt(i) == tmp1.charAt(0)){ }
+            else{
+                res = res + str.charAt(i);
+            }
+        }
+        return res;
+    }
+
 }

@@ -128,6 +128,7 @@ public class DispalyController {
             if (subjectInfoMap.get(key) == null) {
                 String tmp = key;
                 tmp = tmp + ":没有任何学生选择该科目";
+
                 if(0 == flag){
                     resString = tmp;
                     flag = 1;
@@ -139,6 +140,7 @@ public class DispalyController {
             else{
                 String tmp = key;
                 tmp = tmp + ":" + subjectInfoMap.get(key);
+                System.out.println(subjectInfoMap.get(key));
                 if(0 == flag){
                     resString = tmp;
                     flag = 1;
@@ -148,7 +150,12 @@ public class DispalyController {
                 }
             }
         }
-        return resString;
+
+        String str = StringAndListUtil.removeBracket(resString);
+        /**
+         * 将'\3'换成','，
+         */
+        return StringAndListUtil.Replace3To(str);
     }
 
     /**
@@ -160,6 +167,18 @@ public class DispalyController {
     public String PressNaires() {
 
        return StringAndListUtil.listToStr(teacherService.getALllSubject());
+    }
+
+    @RequestMapping(value = "/pressNaire", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
+    @ResponseBody
+    public String pressNaire(@RequestParam(value = "subject") String subject) {
+        if(subject == null)
+            return "false";
+        /**
+         * 催缴
+         */
+        teacherService.PressQuestionnaire(subject);
+        return "true";
     }
 
     /**
