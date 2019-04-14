@@ -212,10 +212,15 @@
 						{
 							addNaire(i, arr);
 						}
-						else if(falg == 2) //统计结果
+						else if(flag == 2) //统计结果
+						{
+							getResultCount(i, arr);
+						}
+						else if(flag == 3) //
 						{
 
 						}
+
 
 					}
 				})(i);
@@ -347,8 +352,19 @@
 			{
 				if (xmlhttp.readyState==4 && xmlhttp.status==200)
 				{
+					/**
+					 * 这个 result 是一个 String,里面的各种科目是由 '\3' 分隔
+					 */
 					var result = xmlhttp.responseText;
-					document.getElementById("myDiv").innerHTML=result;
+
+					var arr = result.split("\3");
+					/**
+					 * arr.length 就可以获取到分隔后的元素每一个元素就是一个科目
+					 */
+					var type = "guan +";
+					var table = createTable(700, 130, 3, arr, type, 3);
+					document.getElementById("myDiv").innerHTML="选择需要管理题目的课程:";
+					$("#myDiv").append(table);
 				}
 			}
 			xmlhttp.open("GET", "/questionmanager", false);

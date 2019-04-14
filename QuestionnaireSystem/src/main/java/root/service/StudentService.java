@@ -1,9 +1,8 @@
 package root.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import root.Util.StringAndListUtil;
 import root.dao.NaireDao;
 import root.dao.StudentDao;
 import root.model.Naire;
@@ -33,15 +32,10 @@ public class StudentService {
 
     @Autowired
     private NaireDao naireDao;
-    /**
-     * 学生未选的课程列表
-     */
-    private List<String> unCompleteSubjectsList = new Vector<>();
 
     @PostConstruct
     public void init(){
         maxSubject = 5;
-        unCompleteSubjectsList = naireDao.getAllSubjects();
     }
 
     /**
@@ -62,15 +56,17 @@ public class StudentService {
          * 如果为0，则不用，否则需要催缴
          */
         List<String> subjectListTmp = studentDao.getSubjects(student);
-        if (subjectListTmp == null) {
+        if (subjectListTmp == null || subjectListTmp.size() == 0 || subjectListTmp.get(0).equals("")) {
             return null;
         }
+
         for(String str : subjectListTmp) {
             naire.setSubject(str);
-            if(naireDao.getPress(naire) == 1){
+            if(naireDao.getPress(naire).equals("1")){
                 pressSubjectList.add(str);
             }
         }
+
         /**
          * 根据pressSubjectList，去naireDao中根据课程名拿到
          * 未完成的学生名单与之相比，如果姓名与自己相同，则需要
@@ -79,11 +75,14 @@ public class StudentService {
         for(String str : pressSubjectList) {
             naire.setSubject(str);
             List<String> uncompletesListTmp = naireDao.getUncompletes(naire);
+            if (uncompletesListTmp == null || uncompletesListTmp.size() == 0 || uncompletesListTmp.get(0).equals("")) {
+                return null;
+            }
             if(uncompletesListTmp.indexOf(student.getName()) != -1){
                 pressSubjectResList.add(str);
             }
         }
-       return pressSubjectResList;
+        return pressSubjectResList;
     }
 
     /**
@@ -126,29 +125,24 @@ public class StudentService {
      * 添加课程
      * @param //item为课程名称
      */
-    public List<String> AddSubject(String item){
+    public boolean AddSubject(String item){
         /**
          * 从数据库拿到对应学生的subjectList
          */
         student.setId(student.getId());
         List<String> subjectsListTmp = studentDao.getSubjects(student);
+        if (subjectsListTmp == null || subjectsListTmp.get(0).equals("")) {
+            subjectsListTmp = new Vector<>();
+        }
+
         if(subjectsListTmp.size() == maxSubject)
-            return null;
+            return false;
+
         /**
          * 是否已经添加该课程
          */
         if(subjectsListTmp.indexOf(item) != -1)
-            return null;
-        /**
-         * 未选课程列表中是否存在
-         */
-        if(unCompleteSubjectsList.indexOf(item) == -1)
-            return null;
-
-        /**
-         * 从未选课程列表中将该课程删除
-         */
-        unCompleteSubjectsList.remove(item);
+            return false;
 
         subjectsListTmp.add(item);
         student.setSubjects(subjectsListTmp);
@@ -164,6 +158,9 @@ public class StudentService {
          */
         naire.setSubject(item);
         List<String> listTmp = naireDao.getStudents(naire);
+        if (listTmp == null || listTmp.get(0).equals("")) {
+            listTmp = new Vector<>();
+        }
         listTmp.add(student.getName());
         naire.setStudents(listTmp);
         naireDao.UpdateStudents(naire);
@@ -172,9 +169,15 @@ public class StudentService {
          * 也需要跟新naireDao中的未完成学生名单
          */
         listTmp = naireDao.getUncompletes(naire);
+        if (listTmp == null || listTmp.get(0).equals("")) {
+            listTmp = new Vector<>();
+        }
+
         listTmp.add(student.getName());
+        naire.setUncompletes(listTmp);
         naireDao.UpdateUncompletes(naire);
-        return unCompleteSubjectsList;
+
+        return true;
     }
 
     /**
@@ -187,8 +190,13 @@ public class StudentService {
          */
         student.setId(student.getId());
         List<String> subjectsListTmp = studentDao.getSubjects(student);
+        if (subjectsListTmp == null || subjectsListTmp.size() == 0 || subjectsListTmp.get(0).equals("")) {
+            return true;
+        }
 
-        if(subjectsListTmp.remove(item)){
+        Integer i = subjectsListTmp.indexOf(item);
+        if(i != -1){
+            subjectsListTmp = StringAndListUtil.deleteStr(subjectsListTmp, item);
             student.setSubjects(subjectsListTmp);
             /**
              * 删除成功后更新到数据库
@@ -202,7 +210,10 @@ public class StudentService {
              */
             naire.setSubject(item);
             List<String> listTmp = naireDao.getStudents(naire);
-            listTmp.remove(student.getName());
+            if (listTmp == null || listTmp.size() == 0 || listTmp.get(0).equals("")) {
+                return false;
+            }
+            listTmp = StringAndListUtil.deleteStr(listTmp, student.getName());
             naire.setStudents(listTmp);
             naireDao.UpdateStudents(naire);
 
@@ -210,7 +221,11 @@ public class StudentService {
              * 也需要跟新naireDao中的未完成学生名单
              */
             listTmp = naireDao.getUncompletes(naire);
-            listTmp.remove(student.getName());
+            if (listTmp == null || listTmp.size() == 0 || listTmp.get(0).equals("")) {
+                return false;
+            }
+            listTmp = StringAndListUtil.deleteStr(listTmp, student.getName());
+            naire.setUncompletes(listTmp);
             naireDao.UpdateUncompletes(naire);
             return true;
         }
@@ -220,7 +235,6 @@ public class StudentService {
         return false;
     }
 
-    public List<String> getUnCompleteSubjectsList() { return unCompleteSubjectsList; }
     public boolean isExist() { return student != null;}
 
     /**

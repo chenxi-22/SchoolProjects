@@ -3,9 +3,7 @@ package root.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import root.Util.StringAndListUtil;
 import root.model.Naire;
 
@@ -56,7 +54,12 @@ public class NaireDao {
         String sql = "UPDATE questionnaire_system.naires SET students=? WHERE subject=?";
         String subject = naire.getSubject();
         List<String> tmp = naire.getStudents();
-        String students = StringAndListUtil.listToStr(tmp);
+        String students = "";
+        if (tmp == null || tmp.size() == 0 || tmp.get(0).equals("")) {
+            students = null;
+        } else {
+            students = StringAndListUtil.listToStr(tmp);
+        }
         jdbcTemplate.update(sql, students, subject);
         return true;
     }
@@ -80,6 +83,9 @@ public class NaireDao {
         String sql = "SELECT uncompletes FROM questionnaire_system.naires WHERE subject=?";
         String subject = naire.getSubject();
         String tmp = jdbcTemplate.queryForObject(sql, new Object[]{ subject }, String.class);
+        if (tmp == null) {
+            return null;
+        }
         List<String> uncompletes = StringAndListUtil.strToList(tmp);
         return uncompletes;
     }
@@ -92,7 +98,13 @@ public class NaireDao {
     public boolean UpdateUncompletes(Naire naire) {
         String sql = "UPDATE questionnaire_system.naires SET uncompletes=? WHERE subject=?";
         String subject = naire.getSubject();
-        String uncompletes = StringAndListUtil.listToStr(naire.getUncompletes());
+        List<String> tmp = naire.getUncompletes();
+        String uncompletes = "";
+        if (tmp == null || tmp.size() == 0 || tmp.get(0).equals("")) {
+            uncompletes = null;
+        } else {
+            uncompletes = StringAndListUtil.listToStr(tmp);
+        }
         jdbcTemplate.update(sql, uncompletes, subject);
         return true;
     }
@@ -106,7 +118,12 @@ public class NaireDao {
         String sql = "UPDATE questionnaire_system.naires SET questionnaires=? WHERE subject=?";
         String subject = naire.getSubject();
         List<String> tmp = naire.getQuestionnaires();
-        String questionnaires = StringAndListUtil.listToStr(tmp);
+        String questionnaires = "";
+        if (tmp == null || tmp.size() == 0 || tmp.get(0).equals("")) {
+            questionnaires = null;
+        } else {
+            questionnaires = StringAndListUtil.listToStr(tmp);
+        }
         jdbcTemplate.update(sql, questionnaires, subject);
         return true;
     }
@@ -116,10 +133,12 @@ public class NaireDao {
      * @param naire
      * @return
      */
-    public Integer getPress(Naire naire) {
+    public String getPress(Naire naire) {
         String sql = "SELECT ispress FROM questionnaire_system.naires WHERE subject=?";
         String subject = naire.getSubject();
-        Integer press = jdbcTemplate.queryForObject(sql, new Object[]{ subject }, Integer.class);
+        System.out.println(subject);
+        String press = jdbcTemplate.queryForObject(sql, new Object[]{ subject }, String.class);
+        System.out.println(press);
         return press;
     }
 

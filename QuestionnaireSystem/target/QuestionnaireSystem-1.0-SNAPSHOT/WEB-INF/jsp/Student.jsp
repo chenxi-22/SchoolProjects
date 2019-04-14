@@ -13,9 +13,10 @@
 <link rel="stylesheet" href="/css/index.css" />
 <script type="text/javascript">
 
-	function addSubject(id, arr) {
-	    var subject = arr[id];
+	function deleteSubject(id, arr) {
+		var subject = arr[id];
 		var xmlhttp;
+		alert(arr[id])
 
 		if (window.XMLHttpRequest)
 		{
@@ -32,15 +33,58 @@
 			if (xmlhttp.readyState==4 && xmlhttp.status==200)
 			{
 				var result = xmlhttp.responseText;
-				alert("hehehehe");
-
+				$("#myDiv").empty();
 				if (result == "nosubjects") {
+					document.getElementById("myDiv").innerHTML="还没有选择任何课程哦！快去选课吧！";
+					return;
+				}
+
+				alert("删除成功！");
+				var arr = result.split("\3");
+				var type = "删除 +";
+				var table = createTable(700, 130, 3, arr, type);
+				document.getElementById("myDiv").innerHTML="以下课程可删除:";
+				$("#myDiv").append(table);
+			}
+		}
+		// 发送 GET 请求，带参数 subject
+		var url = "/delete?subject=" + subject + "&t=" + Math.random();
+		alert(url);
+		xmlhttp.open("GET", url, false);
+		xmlhttp.send();
+		alert("发送成功")
+	}
+
+	function addSubject(id, arr) {
+	    var subject = arr[id];
+		var xmlhttp;
+		alert(arr[id])
+
+		if (window.XMLHttpRequest)
+		{
+			// IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+			xmlhttp=new XMLHttpRequest();
+		}
+		else
+		{
+			// IE6, IE5 浏览器执行代码
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		xmlhttp.onreadystatechange=function()
+		{
+			if (xmlhttp.readyState==4 && xmlhttp.status==200)
+			{
+				var result = xmlhttp.responseText;
+				document.getElementById("myDiv").innerHTML=result;
+				if (result == "nosubjects") {
+					$("#myDiv").empty();
 					document.getElementById("myDiv").innerHTML="好学的你已经选择了所有课程哦！";
 					return;
 				}
 
 				if (result == "choosefailed") {
 				    alert("选课失败，请重新选择！");
+					$("#myDiv").empty();
 				    var type = "添加 +";
 					var table = createTable(700, 130, 3, arr, type);
 					document.getElementById("myDiv").innerHTML="以下课程可选择:";
@@ -54,12 +98,11 @@
 				var table = createTable(700, 130, 3, arr, type);
 				document.getElementById("myDiv").innerHTML="以下课程可选择:";
 				$("#myDiv").append(table);
-			} else {
-				document.getElementById("myDiv").innerHTML=result;
 			}
 		}
 		// 发送 GET 请求，带参数 subject
-		xmlhttp.open("GET","/add?subject=" + subject, false);
+		var url = "/add?subject=" + subject + "&t=" + Math.random();
+		xmlhttp.open("GET", url, false);
 		xmlhttp.send();
 	}
 
@@ -102,7 +145,11 @@
 				// js 的闭包问题，需要注意，必须以下面的解法来解决闭包问题
 				(function(i){
 				    but.onclick = function() {
-				        addSubject(i, arr);
+				    	if (type == "添加 +") {
+							addSubject(i, arr);
+						} else if (type == "删除 -") {
+				    		deleteSubject(i, arr);
+						}
 					}
 				})(i);
 
@@ -170,7 +217,7 @@
 					$("#myDiv").append(table);
 				}
 			}
-			xmlhttp.open("GET","/canadd",false);
+			xmlhttp.open("GET","/canadd?t=" + Math.random(),false);
 			xmlhttp.send();
 		} else if (type == "delete") {
 			xmlhttp.onreadystatechange=function()
@@ -178,7 +225,19 @@
 				if (xmlhttp.readyState==4 && xmlhttp.status==200)
 				{
 					var result = xmlhttp.responseText;
-					document.getElementById("myDiv").innerHTML=result;
+					if (result == "nosubjects") {
+						document.getElementById("myDiv").innerHTML="还没有选择任何课程哦！快去选课吧！"
+						return;
+					}
+					var arr = result.split("\3");
+					/**
+					 * arr.length 就可以获取到分隔后的元素每一个元素就是一个科目
+					 * @type {string}
+					 */
+					var type = "删除 -";
+					var table = createTable(700, 130, 3, arr, type);
+					document.getElementById("myDiv").innerHTML="以下课程可删除:";
+					$("#myDiv").append(table);
 				}
 			}
 			xmlhttp.open("GET", "/choosed", false);

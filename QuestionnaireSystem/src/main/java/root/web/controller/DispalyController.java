@@ -2,6 +2,7 @@ package root.web.controller;
 
 import com.mysql.jdbc.StringUtils;
 import com.mysql.jdbc.jmx.ReplicationGroupManager;
+import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,20 +51,18 @@ public class DispalyController {
          * 如果该用户是学生，那么这里返回 student.jsp，如果是老师返回 teacher.jsp
          */
         if (identity.equals("student")) {
-            System.out.println("student");
             boolean res = studentService.Login(id, password);
             if (res == false) {
                 modelAndView.setViewName("loginfailed");
             } else {
                 List<String> press = studentService.getPressSubjectList();
-                if (press == null) {
+                if (press == null || press.size() == 0 || press.get(0).equals("")) {
                     modelAndView.setViewName("student");
                 } else {
                     modelAndView.setViewName("press");
                 }
             }
         } else {
-            System.out.println("teacher");
             boolean res = teacherService.Login(id, password);
             if (res == false) {
                 modelAndView.setViewName("loginfailed");
@@ -95,7 +94,7 @@ public class DispalyController {
      */
     @RequestMapping(value = "/choosed", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
     @ResponseBody
-    public String ChoosedSbject() {
+    public String ChoosedSubject() {
         List<String> canDelete = studentService.getSubjects();
         if (canDelete == null) {
             String result = "还没有选择任何课程哦！";
@@ -103,6 +102,29 @@ public class DispalyController {
         }
         return StringAndListUtil.listToStr(canDelete);
     }
+
+    @RequestMapping(value = "/add", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
+    @ResponseBody
+    public String AddSubject(@RequestParam(value = "subject") String subject) {
+         studentService.AddSubject(subject);
+         List<String> canChoose = studentService.getCanChooseSubject();
+         if (canChoose == null || canChoose.size() == 0 || canChoose.get(0).equals("")) {
+             return "nosubjects";
+         }
+         return StringAndListUtil.listToStr(canChoose);
+    }
+
+    @RequestMapping(value = "/delete", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
+    @ResponseBody
+    public String DeleteSubject(@RequestParam(value = "subject") String subject) {
+         studentService.DelCourse(subject);
+         List<String> choosed = studentService.getSubjects();
+         if (choosed == null || choosed.size() == 0 || choosed.get(0).equals("")) {
+             return "nosubjects";
+         }
+         return StringAndListUtil.listToStr(choosed);
+    }
+
 
     /**
      * 老师管理

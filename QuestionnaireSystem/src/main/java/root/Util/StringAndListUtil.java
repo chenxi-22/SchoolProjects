@@ -2,8 +2,20 @@ package root.Util;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Vector;
 
 public class StringAndListUtil {
+
+    public static List<String> deleteStr(List<String> str, String todelete) {
+        List<String> res = new Vector<>();
+        for (String tmp : str) {
+            if (!tmp.equals(todelete)) {
+                res.add(tmp);
+            }
+        }
+        return res;
+    }
+
 
     public static List<String> strToList(String str){
         String[] tmp = str.split("\3");
