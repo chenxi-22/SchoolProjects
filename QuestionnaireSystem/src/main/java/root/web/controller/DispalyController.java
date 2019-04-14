@@ -149,8 +149,51 @@ public class DispalyController {
             }
         }
         return resString;
-}
+    }
 
+    /**
+     * 催缴问卷
+     * @return
+     */
+    @RequestMapping(value = "/pressnaires", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
+    @ResponseBody
+    public String PressNaires() {
+
+       return StringAndListUtil.listToStr(teacherService.getALllSubject());
+    }
+
+    /**
+     * 添加问卷
+     * @return
+     */
+    @RequestMapping(value = "/addnaires", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
+    @ResponseBody
+    public String AddNaires() {
+
+        return StringAndListUtil.listToStr(teacherService.getALllSubject());
+    }
+
+    /**
+     * 统计结果
+     * @return
+     */
+    @RequestMapping(value = "/getResultCount", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
+    @ResponseBody
+    public String GetResultCount() {
+
+        return StringAndListUtil.listToStr(teacherService.getALllSubject());
+    }
+
+    /**
+     * 题目添加管理
+     * @return
+     */
+    @RequestMapping(value = "/questionmanager", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
+    @ResponseBody
+    public String QuestionManager() {
+
+        return StringAndListUtil.listToStr(teacherService.getALllSubject());
+    }
 }
 
 
