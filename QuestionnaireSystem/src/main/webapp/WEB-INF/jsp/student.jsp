@@ -31,9 +31,9 @@
 	    var table = document.createElement("table");
 	    var tbody = document.createElement("tbody");
 
-	    table.width = width;
-	    table.height = height;
-	    table.style.border = 1;
+	    table.style.width = width;
+	    table.style.height = height;
+	    table.style.border = 4;
 
 	    var but;
 	    var td;
@@ -47,23 +47,27 @@
 	    	    but.value = type;
 	    	    but.addEventListener("click", func);
 				but.setAttribute("onmouseover","style.backgroundColor='#A9A9A9'");
-				but.setAttribute("onmouseout","style.backgroundColor='#292929'");
+				but.setAttribute("onmouseout","style.backgroundColor='#9ACD32'");
 				but.style.color = "white";
 				but.style.fontSize = "12px";
-				but.style.backgroundColor = "#292929";
+				but.style.backgroundColor = "#9ACD32";
 				but.style.borderColor = "#D3D3D3";
 				but.style.cursor = "pointer";
-				but.style.margin = "7px 5px 7px 0px";
+				but.style.margin = "7px 80px 7px 80px";
+				but.style.width = "75px";
+				but.style.height = "25px";
 
 
 	    		if (j == 0) {
 	    		    td.innerHTML = "科目";
 	    		    td.style.textAlign = "center";
 	    		    td.style.color = "#292929";
+	    		    td.style.width = "200px"
 				} else if (j == 1) {
 	    		    td.innerHTML = arr[i];
 					td.style.textAlign = "center";
 					td.style.color = "#292929";
+					td.style.width = "260px"
 				}
 	    		tr.appendChild(td);
 			}
@@ -72,7 +76,7 @@
 		}
 	    table.appendChild(tbody);
 	    tbody.style.backgroundColor = "#F0FBCD";
-	    table.style.margin = "80px 120px";
+	    table.style.margin = "46px 120px";
 	    return table;
 	}
 
@@ -113,7 +117,7 @@
 					 * @type {string}
 					 */
 					var type = "添加 +";
-					var table = createTable(500, 500, 3, arr, type);
+					var table = createTable(700, 130, 3, arr, type);
 					document.getElementById("myDiv").innerHTML="以下课程可选择:";
 					$("#myDiv").append(table);
 				}
