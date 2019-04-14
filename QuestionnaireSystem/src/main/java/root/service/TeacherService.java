@@ -16,7 +16,7 @@ import java.util.*;
 
 @Service
 public class TeacherService {
-    private Teacher teacher;
+    private Teacher teacher = new Teacher();
 
     @Autowired
     private TeacherDao teacherDao;
@@ -56,7 +56,6 @@ public class TeacherService {
 
     public boolean Login(String id, String password){
         teacher.setId(id);
-        teacher.setPassword(password);
         return teacherDao.isExist(teacher);
     }
 
