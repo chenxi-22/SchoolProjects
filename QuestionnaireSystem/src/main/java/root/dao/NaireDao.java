@@ -36,9 +36,13 @@ public class NaireDao {
      * @return
      */
     public List<String> getStudents(Naire naire) {
+
         String sql = "SELECT students FROM questionnaire_system.naires WHERE subject=?";
         String subject = naire.getSubject();
         String tmp = jdbcTemplate.queryForObject(sql, new Object[]{ subject }, String.class);
+        if (tmp == null) {
+            return null;
+        }
         List<String> students = StringAndListUtil.strToList(tmp);
         return students;
     }

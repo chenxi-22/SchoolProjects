@@ -17,7 +17,7 @@ public class TeacherDao {
      * @return
      */
     public boolean isExist(Teacher teacher) {
-        String sql = "SELECT password FROM questionnaire_system.students WHERE id=?";
+        String sql = "SELECT password FROM questionnaire_system.teachers WHERE id=?";
         String id = teacher.getId();
         String password = jdbcTemplate.queryForObject(sql, new Object[]{ id }, String.class);
         if (password.equals(teacher.getPassword())) {

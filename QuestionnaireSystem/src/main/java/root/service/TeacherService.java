@@ -16,7 +16,7 @@ import java.util.*;
 
 @Service
 public class TeacherService {
-    private Teacher teacher;
+    private Teacher teacher = new Teacher();
 
     @Autowired
     private TeacherDao teacherDao;
@@ -80,6 +80,7 @@ public class TeacherService {
      */
     public Map<String, List<String>> getSubjectInfo(){
         Map<String, List<String>> resMap = new HashMap<String, List<String>>();
+
         for(String str : subjectsList) {
             naire.setSubject(str);
             resMap.put(str, naireDao.getStudents(naire));
@@ -250,7 +251,14 @@ public class TeacherService {
     /**
      * 获取某一个科目问卷的统计结果（是或否的统计数量）
      */
-    public static List<ResCount> getResultCouont(String subject){
+    public static List<ResCount> getResultCount(String subject){
         return resCountMap.get(subject);
     }
+
+    /**
+     * 获取所有课程，一般这个不变
+     * @return
+     */
+    public List<String> getALllSubject() { return naireDao.getAllSubjects(); }
+
 }

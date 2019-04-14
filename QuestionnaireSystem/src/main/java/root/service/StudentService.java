@@ -255,7 +255,7 @@ public class StudentService {
      * 对应问卷的结果
      */
     public List<ResCount> getSutdentNaireRes(String item){
-        List<ResCount> resCountList = TeacherService.getResultCouont(item);
+        List<ResCount> resCountList = TeacherService.getResultCount(item);
         return resCountList;
     }
 }
