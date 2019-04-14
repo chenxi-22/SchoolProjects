@@ -46,6 +46,7 @@ public class DispalyController {
          * 如果该用户是学生，那么这里返回 student.jsp，如果是老师返回 teacher.jsp
          */
         if (identity.equals("student")) {
+            System.out.println("student");
             boolean res = studentService.Login(id, password);
             if (res == false) {
                 modelAndView.setViewName("loginfailed");
@@ -58,13 +59,15 @@ public class DispalyController {
                 }
             }
         } else {
+            System.out.println("teacher");
             boolean res = teacherService.Login(id, password);
+            System.out.println(res);
+            System.out.println("#######################################################");
             if (res == false) {
                 modelAndView.setViewName("loginfailed");
             } else {
-                modelAndView.setViewName("Teacher");
+                modelAndView.setViewName("teacher");
             }
-            return modelAndView;
         }
         return modelAndView;
     }

@@ -56,6 +56,7 @@ public class TeacherService {
 
     public boolean Login(String id, String password){
         teacher.setId(id);
+        teacher.setPassword(password);
         return teacherDao.isExist(teacher);
     }
 
