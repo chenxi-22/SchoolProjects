@@ -1,14 +1,18 @@
 package root.web.controller;
 
+import com.mysql.jdbc.jmx.ReplicationGroupManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import root.Util.StringAndListUtil;
 import root.service.StudentService;
 import root.service.TeacherService;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @Controller("displayController")
@@ -48,7 +52,7 @@ public class DispalyController {
             } else {
                 List<String> press = studentService.getPressSubjectList();
                 if (press == null) {
-                    modelAndView.setViewName("Student");
+                    modelAndView.setViewName("student");
                 } else {
                     modelAndView.setViewName("press");
                 }
@@ -65,61 +69,30 @@ public class DispalyController {
         return modelAndView;
     }
 
-    @RequestMapping(value = {"/student"}, method = {RequestMethod.GET})
-    public ModelAndView StudentHome() {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("student");
-        // if (studentService.isExist() != null) {
-        //     modelAndView.setViewName("student");
-        // } else {
-        //     modelAndView.setViewName("again_login");
-        // }
-        return modelAndView;
+    /**
+     * 查看能够添加的课程
+     * @return
+     */
+    @RequestMapping(value = "/canadd", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
+    @ResponseBody
+    public String SearchCanChooseSubject() {
+        List<String> canChoose = studentService.getCanChooseSubject();
+        return StringAndListUtil.listToStr(canChoose);
     }
 
     /**
-     * 添加选课信息
-     * TODO
+     * 查看所有选课
      * @return
      */
-    @RequestMapping(value = {"/student_add"}, method = {RequestMethod.GET})
-    public ModelAndView StudentAddSubject() {
-        ModelAndView modelAndView = new ModelAndView();
-        return modelAndView;
-    }
-
-    /**
-     * 浏览问卷
-     * TODO
-     * @return
-     */
-    @RequestMapping(value = {"/student_watch"}, method = {RequestMethod.GET})
-    public ModelAndView StudentWatch() {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("student_watch");
-        return modelAndView;
-    }
-
-    /**
-     * 做问卷，采用 POST 方式提交问卷的结果
-     * TODO
-     * @return
-     */
-    @RequestMapping(value = {"/student_do"}, method = {RequestMethod.POST})
-    public ModelAndView StudentDo() {
-        ModelAndView modelAndView = new ModelAndView();
-        return modelAndView;
-    }
-
-    /**
-     * 查看问卷结果
-     * TODO
-     * @return
-     */
-    @RequestMapping(value = {"/student_get_result"}, method = {RequestMethod.GET})
-    public ModelAndView StudentGetResult() {
-        ModelAndView modelAndView = new ModelAndView();
-        return modelAndView;
+    @RequestMapping(value = "/choosed", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
+    @ResponseBody
+    public String ChoosedSbject() {
+        List<String> canDelete = studentService.getSubjects();
+        if (canDelete == null) {
+            String result = "还没有选择任何课程哦！";
+            return result;
+        }
+        return StringAndListUtil.listToStr(canDelete);
     }
 
 }

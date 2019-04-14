@@ -43,6 +43,7 @@ public class StudentService {
         maxSubject = 5;
         unCompleteSubjectsList = naireDao.getAllSubjects();
     }
+
     /**
      * 用来获取需要催缴问卷的课程列表
      */
@@ -94,6 +95,31 @@ public class StudentService {
         if((student = studentDao.isExist(student)) == null)
             return false;
         return true;
+    }
+
+    /**
+     * 获取可选择的课程
+     * @return
+     */
+    public List<String> getCanChooseSubject() {
+        List<String> subjects = naireDao.getAllSubjects();
+        List<String> student_subject = studentDao.getSubjects(student);
+        if (student_subject == null) {
+            return subjects;
+        }
+        List<String> canChoose = new Vector<>();
+        for (String subject : subjects) {
+            for (String choose : student_subject) {
+                if (subject.equals(choose)) {
+                    break;
+                }
+                if (!subject.equals(choose) &&
+                        choose.equals(student_subject.get(student_subject.size() - 1))) {
+                    canChoose.add(subject);
+                }
+            }
+        }
+        return canChoose;
     }
 
     /**
@@ -196,6 +222,7 @@ public class StudentService {
 
     public List<String> getUnCompleteSubjectsList() { return unCompleteSubjectsList; }
     public boolean isExist() { return student != null;}
+
     /**
      * 查看学生所选课程
      */
