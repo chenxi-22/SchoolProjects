@@ -34,25 +34,25 @@
 						td.innerHTML = "问题";
 						td.style.textAlign = "center";
 						td.style.color = "#292929";
-						td.style.width = "200px"
+						td.style.width = "580px"
 					} else {
 						td.innerHTML = i + "." + arr[i - 1];
 						td.style.textAlign = "center";
 						td.style.color = "#292929";
-						td.style.width = "200px"
+						td.style.width = "500px"
 					}
 				} else if (j == 1) {
 					if (i == 0) {
 						td.innerHTML = "是"
 						td.style.textAlign = "center";
 						td.style.color = "#292929";
-						td.style.width = "200px"
+						td.style.width = "60px"
 					} else {
 						rd = document.createElement("input");
 						rd.type = "checkbox";
 						rd.value = "是";
 						rd.id = "yes";
-						rd.style.verticalAlign = "center";
+						rd.style.margin = "7px 70px 7px 70px";
 						td.appendChild(rd);
 					}
 				} else if (j == 2) {
@@ -60,13 +60,13 @@
 						td.innerHTML = "否"
 						td.style.textAlign = "center";
 						td.style.color = "#292929";
-						td.style.width = "200px"
+						td.style.width = "60px"
 					} else {
 						rd2 = document.createElement("input");
 						rd2.type = "checkbox";
 						rd2.value = "否";
 						rd2.id = "no";
-						rd2.style.verticalAlign = "center";
+						rd2.style.margin = "7px 70px 7px 70px";
 						td.appendChild(rd2);
 					}
 
