@@ -100,9 +100,8 @@ public class DispalyController {
     @ResponseBody
     public String ChoosedSubject() {
         List<String> canDelete = studentService.getSubjects();
-        if (canDelete == null) {
-            String result = "还没有选择任何课程哦！";
-            return result;
+        if (canDelete == null || canDelete.size() == 0 || canDelete.get(0).equals("")) {
+            return "nosubjects";
         }
         return StringAndListUtil.listToStr(canDelete);
     }
