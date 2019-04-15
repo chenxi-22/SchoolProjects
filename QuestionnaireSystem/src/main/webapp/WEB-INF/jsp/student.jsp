@@ -13,10 +13,16 @@
 <link rel="stylesheet" href="/css/index.css" />
 <script type="text/javascript">
 
+	function seeNaire(i, arr) {
+	    alert(arr[i] + "问卷");
+	}
+	function seeResult(i, arr) {
+		alert(arr[i] + "结果");
+	}
+
 	function deleteSubject(id, arr) {
 		var subject = arr[id];
 		var xmlhttp;
-		alert(arr[id])
 
 		if (window.XMLHttpRequest)
 		{
@@ -41,7 +47,7 @@
 
 				alert("删除成功！");
 				var arr = result.split("\3");
-				var type = "删除 +";
+				var type = "删除 -";
 				var table = createTable(700, 130, 3, arr, type);
 				document.getElementById("myDiv").innerHTML="以下课程可删除:";
 				$("#myDiv").append(table);
@@ -49,61 +55,67 @@
 		}
 		// 发送 GET 请求，带参数 subject
 		var url = "/delete?subject=" + subject + "&t=" + Math.random();
-		alert(url);
 		xmlhttp.open("GET", url, false);
 		xmlhttp.send();
-		alert("发送成功")
 	}
 
 	function addSubject(id, arr) {
-	    var subject = arr[id];
-		var xmlhttp;
-		alert(arr[id])
-
-		if (window.XMLHttpRequest)
-		{
-			// IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
-			xmlhttp=new XMLHttpRequest();
-		}
-		else
-		{
-			// IE6, IE5 浏览器执行代码
-			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-		}
-		xmlhttp.onreadystatechange=function()
-		{
-			if (xmlhttp.readyState==4 && xmlhttp.status==200)
-			{
-				var result = xmlhttp.responseText;
-				document.getElementById("myDiv").innerHTML=result;
+		$.ajax({
+			type: 'POST',
+			url: '/add',
+			data: { subject: arr[id] },
+			success: function (result) {
+			    alert("添加成功");
+				$("#myDiv").empty();
 				if (result == "nosubjects") {
-					$("#myDiv").empty();
-					document.getElementById("myDiv").innerHTML="好学的你已经选择了所有课程哦！";
+					document.getElementById("myDiv").innerHTML="好学的你已经选了所有的课程了呢！";
 					return;
 				}
-
-				if (result == "choosefailed") {
-				    alert("选课失败，请重新选择！");
-					$("#myDiv").empty();
-				    var type = "添加 +";
-					var table = createTable(700, 130, 3, arr, type);
-					document.getElementById("myDiv").innerHTML="以下课程可选择:";
-					$("#myDiv").append(table);
-					return;
-				}
-
-				alert("选课成功！");
 				var arr = result.split("\3");
 				var type = "添加 +";
 				var table = createTable(700, 130, 3, arr, type);
-				document.getElementById("myDiv").innerHTML="以下课程可选择:";
+				document.getElementById("myDiv").innerHTML="以下课程可添加:";
 				$("#myDiv").append(table);
+			},
+			error:function(result) {
+			    alert(result);
 			}
+		});
+	}
+
+	function createChooseTable(width, height, line, arr) {
+		var table = document.createElement("table");
+		var tbody = document.createElement("tbody");
+
+		table.style.width = width;
+		table.style.height = height;
+		table.style.border = 4;
+
+		var td;
+
+		for (var i = 0; i < arr.length; i++) {
+			var tr = document.createElement("tr");
+			for (var j = 0; j < line; ++j) {
+				td = document.createElement("td");
+				if (j == 0) {
+					td.innerHTML = "科目";
+					td.style.textAlign = "center";
+					td.style.color = "#292929";
+					td.style.width = "200px"
+				} else if (j == 1) {
+					td.innerHTML = arr[i];
+					td.style.textAlign = "center";
+					td.style.color = "#292929";
+					td.style.width = "260px"
+				}
+				tr.appendChild(td);
+			}
+			tbody.appendChild(tr);
 		}
-		// 发送 GET 请求，带参数 subject
-		var url = "/add?subject=" + subject + "&t=" + Math.random();
-		xmlhttp.open("GET", url, false);
-		xmlhttp.send();
+		table.appendChild(tbody);
+		tbody.style.backgroundColor = "#F0FBCD";
+		table.style.margin = "46px 120px";
+		return table;
 	}
 
 	/**
@@ -149,6 +161,10 @@
 							addSubject(i, arr);
 						} else if (type == "删除 -") {
 				    		deleteSubject(i, arr);
+						} else if (type == "浏览") {
+				    	    seeNaire(i, arr);
+						} else if (type == "查看结果") {
+				    	    seeResult(i, arr);
 						}
 					}
 				})(i);
@@ -248,7 +264,14 @@
 				if (xmlhttp.readyState==4 && xmlhttp.status==200)
 				{
 					var result = xmlhttp.responseText;
-					document.getElementById("myDiv").innerHTML=result;
+					if (result == "nosubjects") {
+						document.getElementById("myDiv").innerHTML="还没有选择任何课程呢，快去选课哦！";
+						return;
+					}
+					var arr = result.split("\3");
+					var table = createChooseTable(700, 130, 2, arr);
+					document.getElementById("myDiv").innerHTML="以下课程已经选择:";
+					$("#myDiv").append(table);
 				}
 			}
 			xmlhttp.open("GET", "/choosed", false);
@@ -259,7 +282,15 @@
 				if (xmlhttp.readyState==4 && xmlhttp.status==200)
 				{
 					var result = xmlhttp.responseText;
-					document.getElementById("myDiv").innerHTML=result;
+					if (result == "nosubjects") {
+						document.getElementById("myDiv").innerHTML="还没有选择任何课程呢，怎么会有问卷呢?";
+						return;
+					}
+					var arr = result.split("\3");
+					var type = "浏览";
+					var table = createTable(700,130, 3, arr, type);
+					document.getElementById("myDiv").innerHTML="下面的问卷可以浏览:";
+					$("#myDiv").append(table);
 				}
 			}
 			xmlhttp.open("GET", "/choosed", false);
@@ -270,7 +301,15 @@
 				if (xmlhttp.readyState==4 && xmlhttp.status==200)
 				{
 					var result = xmlhttp.responseText;
-					document.getElementById("myDiv").innerHTML=result;
+					if (result == "nosubjects") {
+						document.getElementById("myDiv").innerHTML="还没有选择任何课程呢，是看不到别的同学回答的结果的?";
+						return;
+					}
+					var arr = result.split("\3");
+					var type = "查看结果";
+					var table = createTable(700,130, 3, arr, type);
+					document.getElementById("myDiv").innerHTML="下面的问卷可查看结果:";
+					$("#myDiv").append(table);
 				}
 			}
 			xmlhttp.open("GET", "/choosed", false);
@@ -284,7 +323,7 @@
 		<div class="t-side">
 			<p class="b">课程质量问卷调查系统</p>
 		</div>
-		<div class="l-side" id="myDiv">首页显示</div>
+		<div class="l-side" id="myDiv">以下的${list}</div>
 
 <div class="s-side">
 	<ul>
