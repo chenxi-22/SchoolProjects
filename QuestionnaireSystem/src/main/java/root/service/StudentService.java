@@ -262,6 +262,11 @@ public class StudentService {
         return subjectsListTmp;
     }
 
+    public void test() {
+       naire.setSubject("chinese");
+       naireDao.UpdateQuestions(naire);
+    }
+
     /**
      * 查看某一科问卷
      * @param item //科目名称
@@ -272,8 +277,13 @@ public class StudentService {
          * 从数据库拉取问卷信息
          * 保存在成员变量naire中
          */
-        naire.setQuestionnaires(strToList(naireDao.getQuestionnaires(naire)));
-        return naire.getQuestionnaires();
+        System.out.println("getNaire " + item);
+        String ques = naireDao.getQuestionnaires(naire);
+        System.out.println("getNaire" + ques);
+        if (ques == null || ques == "") {
+            return null;
+        }
+        return StringAndListUtil.strToList(ques);
     }
 
     /**

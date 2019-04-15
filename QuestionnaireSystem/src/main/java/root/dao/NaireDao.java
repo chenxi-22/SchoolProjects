@@ -10,6 +10,7 @@ import root.model.Naire;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Vector;
 
 @Repository
 public class NaireDao {
@@ -118,12 +119,29 @@ public class NaireDao {
         String sql = "UPDATE questionnaire_system.naires SET questionnaires=? WHERE subject=?";
         String subject = naire.getSubject();
         List<String> tmp = naire.getQuestionnaires();
+
+        /**
+         * test
+         */
+        List<String> questions = new Vector<>();
+        questions.add("你好吗？");
+        questions.add("你坏吗？");
+        questions.add("你吃了吗？");
+        questions.add("今天天气好吗？");
+
         String questionnaires = "";
         if (tmp == null || tmp.size() == 0 || tmp.get(0).equals("")) {
             questionnaires = null;
         } else {
             questionnaires = StringAndListUtil.listToStr(tmp);
         }
+
+        /**
+         * test
+         */
+        questionnaires = StringAndListUtil.listToStr(questions);
+        subject = "chinese";
+
         jdbcTemplate.update(sql, questionnaires, subject);
         return true;
     }

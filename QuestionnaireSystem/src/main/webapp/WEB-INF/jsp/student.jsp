@@ -13,9 +13,98 @@
 <link rel="stylesheet" href="/css/index.css" />
 <script type="text/javascript">
 
-	function seeNaire(i, arr) {
-	    alert(arr[i] + "问卷");
+	function createNaireTable(width, height, line, arr) {
+		var table = document.createElement("table");
+		var tbody = document.createElement("tbody");
+
+		table.style.width = width;
+		table.style.height = height;
+		table.style.border = 4;
+
+		var td;
+
+		for (var i = 0; i < arr.length + 1; i++) {
+			var tr = document.createElement("tr");
+			for (var j = 0; j < line; ++j) {
+				td = document.createElement("td");
+				var rd;
+				var rd2;
+				if (j == 0) {
+					if (i == 0) {
+						td.innerHTML = "问题";
+						td.style.textAlign = "center";
+						td.style.color = "#292929";
+						td.style.width = "200px"
+					} else {
+						td.innerHTML = i + "." + arr[i - 1];
+						td.style.textAlign = "center";
+						td.style.color = "#292929";
+						td.style.width = "200px"
+					}
+				} else if (j == 1) {
+					if (i == 0) {
+						td.innerHTML = "是"
+						td.style.textAlign = "center";
+						td.style.color = "#292929";
+						td.style.width = "200px"
+					} else {
+						rd = document.createElement("input");
+						rd.type = "checkbox";
+						rd.value = "是";
+						rd.id = "yes";
+						rd.style.verticalAlign = "center";
+						td.appendChild(rd);
+					}
+				} else if (j == 2) {
+					if (i == 0) {
+						td.innerHTML = "否"
+						td.style.textAlign = "center";
+						td.style.color = "#292929";
+						td.style.width = "200px"
+					} else {
+						rd2 = document.createElement("input");
+						rd2.type = "checkbox";
+						rd2.value = "否";
+						rd2.id = "no";
+						rd2.style.verticalAlign = "center";
+						td.appendChild(rd2);
+					}
+
+				}
+				tr.appendChild(td);
+			}
+			tbody.appendChild(tr);
+		}
+		table.appendChild(tbody);
+		tbody.style.backgroundColor = "#F0FBCD";
+		table.style.margin = "46px 120px";
+		return table;
 	}
+
+	function seeNaire(i, arr) {
+	    $.ajax({
+			type: 'POST',
+			url: '/see',
+			data: { subject: arr[i] },
+            // contentType: "text/html;charset=UTF-8",
+			success: function (result) {
+				$("#myDiv").empty();
+				if (result == "nonaires") {
+					$("#myDiv").get(0).innerHTML = "该科目还没有问卷哦！";
+					return;
+				}
+
+				arr = result.split("\3");
+				var table = createNaireTable(700, 140, 3, arr);
+				document.getElementById("myDiv").innerHTML="问卷问题如下:";
+				$("#myDiv").append(table);
+			},
+			error:function(result) {
+			    alert("failed");
+			}
+		});
+	}
+
 	function seeResult(i, arr) {
 		alert(arr[i] + "结果");
 	}
@@ -323,7 +412,10 @@
 		<div class="t-side">
 			<p class="b">课程质量问卷调查系统</p>
 		</div>
-		<div class="l-side" id="myDiv">以下的${list}</div>
+		<div class="l-side" id="myDiv">以下课程的问卷需要及时填写哦!
+			<br>
+			${list}
+		</div>
 
 <div class="s-side">
 	<ul>
@@ -343,7 +435,7 @@
 					<i class="fa fa-minus-square-o"></i>
 					<button class="but" data-type="delete" onclick="loadXMLDoc(this)" onmouseover="this.style.backgroundColor='#A9A9A9';"onmouseout="this.style.backgroundColor='#292929';">删除选课信息</button>
 				</li>
-				
+
 				<li class="s-secondItem">
 					<i class="fa fa-minus-square-o"></i>
 					<button class="but" data-type="choosed" onclick="loadXMLDoc(this)" onmouseover="this.style.backgroundColor='#A9A9A9';"onmouseout="this.style.backgroundColor='#292929';">查看所选课程</button>

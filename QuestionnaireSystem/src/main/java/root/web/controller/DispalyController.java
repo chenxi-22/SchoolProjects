@@ -123,6 +123,23 @@ public class DispalyController {
     }
 
     /**
+     * 浏览问卷
+     * @param subject
+     * @return
+     */
+    @RequestMapping(value = "/see", method = RequestMethod.POST, produces="text/html;charset=UTF-8")
+    @ResponseBody
+    public String seeNaire(@RequestParam(value = "subject") String subject) {
+        List<String> questions = studentService.getNaire(subject);
+        System.out.println(questions);
+        if (questions == null || questions.size() == 0 || questions.get(0).equals("")) {
+            return "nonaires";
+        }
+        return StringAndListUtil.listToStr(questions);
+    }
+
+
+    /**
      * 删除课程
      * @param subject
      * @return
@@ -130,12 +147,12 @@ public class DispalyController {
     @RequestMapping(value = "/delete", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
     @ResponseBody
     public String DeleteSubject(@RequestParam(value = "subject") String subject) {
-         studentService.DelCourse(subject);
-         List<String> choosed = studentService.getSubjects();
-         if (choosed == null || choosed.size() == 0 || choosed.get(0).equals("")) {
-             return "nosubjects";
-         }
-         return StringAndListUtil.listToStr(choosed);
+        studentService.DelCourse(subject);
+        List<String> choosed = studentService.getSubjects();
+        if (choosed == null || choosed.size() == 0 || choosed.get(0).equals("")) {
+            return "nosubjects";
+        }
+        return StringAndListUtil.listToStr(choosed);
     }
 
 
