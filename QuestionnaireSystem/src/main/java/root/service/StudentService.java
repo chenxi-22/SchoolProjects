@@ -131,21 +131,27 @@ public class StudentService {
          */
         student.setId(student.getId());
         List<String> subjectsListTmp = studentDao.getSubjects(student);
-        if (subjectsListTmp == null || subjectsListTmp.get(0).equals("")) {
+        if (subjectsListTmp == null || subjectsListTmp.size() == 0 ||  subjectsListTmp.get(0).equals("")) {
             subjectsListTmp = new Vector<>();
         }
 
-        if(subjectsListTmp.size() == maxSubject)
+        List<String> useList = new Vector<>();
+        for (String tmp : subjectsListTmp) {
+            useList.add(tmp);
+        }
+
+
+        if(useList.size() == maxSubject)
             return false;
 
         /**
          * 是否已经添加该课程
          */
-        if(subjectsListTmp.indexOf(item) != -1)
+        if(useList.indexOf(item) != -1)
             return false;
 
-        subjectsListTmp.add(item);
-        student.setSubjects(subjectsListTmp);
+        useList.add(item);
+        student.setSubjects(useList);
         /**
          * 添加成功后更新到数据库
          */
@@ -158,23 +164,30 @@ public class StudentService {
          */
         naire.setSubject(item);
         List<String> listTmp = naireDao.getStudents(naire);
-        if (listTmp == null || listTmp.get(0).equals("")) {
+        if (listTmp == null || listTmp.size() == 0 || listTmp.get(0).equals("")) {
             listTmp = new Vector<>();
         }
-        listTmp.add(student.getName());
-        naire.setStudents(listTmp);
+        useList.clear();
+        for (String tmp : listTmp) {
+            useList.add(tmp);
+        }
+        useList.add(student.getName());
+        naire.setStudents(useList);
         naireDao.UpdateStudents(naire);
 
         /**
          * 也需要跟新naireDao中的未完成学生名单
          */
         listTmp = naireDao.getUncompletes(naire);
-        if (listTmp == null || listTmp.get(0).equals("")) {
+        if (listTmp == null || listTmp.size() == 0 || listTmp.get(0).equals("")) {
             listTmp = new Vector<>();
         }
-
-        listTmp.add(student.getName());
-        naire.setUncompletes(listTmp);
+        useList.clear();
+        for (String str : listTmp) {
+            useList.add(str);
+        }
+        useList.add(student.getName());
+        naire.setUncompletes(useList);
         naireDao.UpdateUncompletes(naire);
 
         return true;

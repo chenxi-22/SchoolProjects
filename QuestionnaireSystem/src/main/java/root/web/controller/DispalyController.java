@@ -59,7 +59,8 @@ public class DispalyController {
                 if (press == null || press.size() == 0 || press.get(0).equals("")) {
                     modelAndView.setViewName("student");
                 } else {
-                    modelAndView.setViewName("press");
+                    modelAndView.addObject("list", press);
+                    modelAndView.setViewName("student");
                 }
             }
         } else {
@@ -85,6 +86,9 @@ public class DispalyController {
     @ResponseBody
     public String SearchCanChooseSubject() {
         List<String> canChoose = studentService.getCanChooseSubject();
+        if (canChoose == null || canChoose.size() == 0 || canChoose.get(0).equals("")) {
+            return "nosubjects";
+        }
         return StringAndListUtil.listToStr(canChoose);
     }
 
@@ -103,17 +107,27 @@ public class DispalyController {
         return StringAndListUtil.listToStr(canDelete);
     }
 
-    @RequestMapping(value = "/add", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
+    /**
+     *  添加课程
+     * @param subject
+     * @return
+     */
+    @RequestMapping(value = "/add", method = RequestMethod.POST, produces="text/html;charset=UTF-8")
     @ResponseBody
     public String AddSubject(@RequestParam(value = "subject") String subject) {
-         studentService.AddSubject(subject);
-         List<String> canChoose = studentService.getCanChooseSubject();
-         if (canChoose == null || canChoose.size() == 0 || canChoose.get(0).equals("")) {
-             return "nosubjects";
-         }
-         return StringAndListUtil.listToStr(canChoose);
+        studentService.AddSubject(subject);
+        List<String> canChoose = studentService.getCanChooseSubject();
+        if (canChoose == null || canChoose.size() == 0 || canChoose.get(0).equals("")) {
+            return "nosubjects";
+        }
+        return StringAndListUtil.listToStr(canChoose);
     }
 
+    /**
+     * 删除课程
+     * @param subject
+     * @return
+     */
     @RequestMapping(value = "/delete", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
     @ResponseBody
     public String DeleteSubject(@RequestParam(value = "subject") String subject) {

@@ -136,9 +136,7 @@ public class NaireDao {
     public String getPress(Naire naire) {
         String sql = "SELECT ispress FROM questionnaire_system.naires WHERE subject=?";
         String subject = naire.getSubject();
-        System.out.println(subject);
         String press = jdbcTemplate.queryForObject(sql, new Object[]{ subject }, String.class);
-        System.out.println(press);
         return press;
     }
 
