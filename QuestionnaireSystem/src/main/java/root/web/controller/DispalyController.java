@@ -11,14 +11,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import root.Util.StringAndListUtil;
+import root.model.ResCount;
 import root.service.StudentService;
 import root.service.TeacherService;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller("displayController")
 public class DispalyController {
@@ -177,7 +175,7 @@ public class DispalyController {
         int flag = 0;
         String split = "\4";
         for (String key : subjectInfoMap.keySet()) {
-            if (subjectInfoMap.get(key) == null) {
+            if (subjectInfoMap.get(key) == null || subjectInfoMap.get(key).size() == 0 || subjectInfoMap.get(key).get(0).equals("")) {
                 String tmp = key;
                 tmp = tmp + ":没有任何学生选择该科目";
 
@@ -192,7 +190,6 @@ public class DispalyController {
             else{
                 String tmp = key;
                 tmp = tmp + ":" + subjectInfoMap.get(key);
-                System.out.println(subjectInfoMap.get(key));
                 if(0 == flag){
                     resString = tmp;
                     flag = 1;
@@ -218,7 +215,7 @@ public class DispalyController {
     @ResponseBody
     public String PressNaires() {
 
-       return StringAndListUtil.listToStr(teacherService.getALllSubject());
+        return StringAndListUtil.listToStr(teacherService.getALllSubject());
     }
 
     @RequestMapping(value = "/pressNaire", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
@@ -244,6 +241,15 @@ public class DispalyController {
         return StringAndListUtil.listToStr(teacherService.getALllSubject());
     }
 
+    @RequestMapping(value = "/addnaire", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
+    public ModelAndView addque() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("addque");
+        return modelAndView;
+    }
+
+
+
     /**
      * 统计结果
      * @return
@@ -254,6 +260,41 @@ public class DispalyController {
 
         return StringAndListUtil.listToStr(teacherService.getALllSubject());
     }
+
+
+    @RequestMapping(value = "/questionmanag", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
+    @ResponseBody
+    public String GetResult(@RequestParam(value = "subject") String subject) {
+        if(subject == null)
+            return "subject null";
+//        List<ResCount> resCount = TeacherService.getResultCount(subject);
+//
+//        if (resCount == null || resCount.size() == 0) {
+//            return "noOneAnswer";
+//        }
+
+
+        // 测试代码
+        List<ResCount> testList = new Vector<ResCount>();
+        for(int i = 0; i <= 5; ++i){
+            ResCount tmp = new ResCount();
+            tmp._yesCount = i;
+            tmp._noCount = i;
+            testList.add(tmp);
+        }
+        TeacherService.resCountMap.put("chinese", testList);
+        TeacherService.resCountMap.put("english", testList);
+        TeacherService.resCountMap.put("math", testList);
+
+        List<ResCount> resCount = TeacherService.getResultCount(subject);
+        String resString = StringAndListUtil.CountToString(resCount);
+
+        System.out.println(resString);
+        return resString;
+    }
+
+
+
 
     /**
      * 题目添加管理

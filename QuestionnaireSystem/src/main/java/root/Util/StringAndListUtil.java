@@ -1,5 +1,7 @@
 package root.Util;
 
+import root.model.ResCount;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
@@ -67,4 +69,24 @@ public class StringAndListUtil {
         return res;
     }
 
+    public static String CountToString(List<ResCount> resCount){
+        String resString = "";
+        int flag = 0;
+        /**
+         * 每个答案之间用','分隔，每个问题用'\3'分隔
+         */
+        for(ResCount rc : resCount){
+            if(0 == flag){
+                String tmp = String.valueOf(rc._yesCount) + ',' + String.valueOf(rc._noCount);
+                resString = tmp;
+                flag = 1;
+            }
+            else{
+                String tmp = String.valueOf(rc._yesCount) + ',' + String.valueOf(rc._noCount);
+                resString = resString + '\3' + tmp;
+            }
+        }
+
+        return resString;
+    }
 }

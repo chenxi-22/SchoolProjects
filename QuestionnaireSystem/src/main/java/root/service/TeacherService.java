@@ -46,7 +46,9 @@ public class TeacherService {
      * key为科目，value为每个问题的统计结果，数组下标表示问题编号
      * 为static类型，所有实例化的类看到的都是一样的
      */
-    private static Map<String, List<ResCount>> resCountMap = new HashMap<>();
+
+    // TODO 这里为了方便测试将其改为public，记得改回private
+    public static Map<String, List<ResCount>> resCountMap = new HashMap<>();
 
     @PostConstruct
     public void init(){

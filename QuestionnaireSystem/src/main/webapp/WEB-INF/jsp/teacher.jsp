@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8" />
@@ -52,44 +53,46 @@
 	}
 
 	function addNaire(id, arr) {
-		var subject = arr[id];
-		var xmlhttp;
-		if (window.XMLHttpRequest)
-		{
-			// IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
-			xmlhttp=new XMLHttpRequest();
-		}
-		else
-		{
-			// IE6, IE5 浏览器执行代码
-			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-		}
-		xmlhttp.onreadystatechange=function()
-		{
-			var result = xmlhttp.responseText;
-			//alert("hehehehe");
-			if (xmlhttp.readyState==4 && xmlhttp.status==200)
-			{
-				var result = xmlhttp.responseText;
-				alert("添加问卷");
+		window.open ("http://http://localhost:8080/", 'newwindow', 'height=500, width=600, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=n o, status=no')
 
-				if (result == "false") {
-					alert("添加失败！");
-					return;
-				}
-				alert("添加成功！");
-				document.getElementById("myDiv").innerHTML="催缴成功！";
-			} else {
-
-				document.getElementById("myDiv").innerHTML="催缴失败！";
-			}
-		}
-		// 发送 GET 请求，带参数 subject
-		xmlhttp.open("GET","/pressNaire?subject=" + subject, false);
-		xmlhttp.send();
 	}
 
 	function getResultCount(id, arr) {
+		$.ajax({
+			type: 'GET',
+			url: '/questionmanag',
+			data: { subject: arr[id] },
+			success: function (result) {
+				$("#myDiv").empty();
+				alert(arr[id]);
+				alert("hahahha");
+				alert(result);
+				if (result == "subject null") {
+					document.getElementById("myDiv").innerHTML="未知错误！！！";
+					return;
+				}
+				if(result == "noOneAnswer"){
+					document.getElementById("myDiv").innerHTML="还没有人选择该课程！！！";
+					return;
+				}
+
+				/**
+				 * 每个答案之间用','分隔，每个问题用'\3'分隔
+				 * ','前面为选择是的人数，后面为选择否的人数
+				 */
+				var allQues = result.split("\3");
+				var table = createTableWithoutButton_1(700, 130, 3, allQues);
+				document.getElementById("myDiv").innerHTML="该课程问卷结果如下:";
+				$("#myDiv").append(table);
+			},
+			error:function(result) {
+				alert(result);
+			}
+		});
+
+	}
+
+	function questionManager(id, arr) {
 		var subject = arr[id];
 		var xmlhttp;
 		if (window.XMLHttpRequest)
@@ -107,10 +110,10 @@
 			if (xmlhttp.readyState==4 && xmlhttp.status==200)
 			{
 				var result = xmlhttp.responseText;
-				alert("统计结果");
+				alert("添加管理成功");
 
 				if (result == "false") {
-					alert("统计失败！");
+					alert("添加管理失败失败！");
 					return;
 				}
 				alert("统计成功！");
@@ -121,7 +124,7 @@
 			}
 		}
 		// 发送 GET 请求，带参数 subject
-		xmlhttp.open("GET","/pressNaire?subject=" + subject, false);
+		xmlhttp.open("GET","/questionManager?subject=" + subject, false);
 		xmlhttp.send();
 	}
 	/**
@@ -132,6 +135,77 @@
 	 * @param arr 表内数据
 	 * @param type button 类型名
 	 */
+	function createTableWithoutButton_1(width, height, line, arr) {
+		var table = document.createElement("table");
+		var tbody = document.createElement("tbody");
+		table.style.width = width;
+		table.style.height = height;
+		table.style.border = 4;
+		var td;
+		for (var i = 0; i <= arr.length; i++) {
+			var tr = document.createElement("tr");
+			for (var j = 0; j < line; ++j) {
+				td = document.createElement("td");
+
+				if(i > 0){
+					var tmparr = arr[i-1].split(",");
+				}
+
+				if (j == 0) {
+					if(i == 0){
+						td.innerHTML = "问题编号";
+						td.style.textAlign = "center";
+						td.style.color = "#292929";
+						td.style.width = "200px";
+						td.style.fontSize = "20px"
+					} else {
+						td.innerHTML =  i;
+						td.style.textAlign = "center";
+						td.style.color = "#292929";
+						td.style.width = "200px";
+						td.style.fontSize = "20px"
+					}
+
+				} else if (j == 1) {
+					if(i == 0){
+						td.innerHTML = "选择是的人数";
+						td.style.textAlign = "center";
+						td.style.color = "#292929";
+						td.style.width = "200px";
+						td.style.fontSize = "20px"
+					}else {
+						td.innerHTML = tmparr[0];
+						td.style.textAlign = "center";
+						td.style.color = "#292929";
+						td.style.width = "200px";
+						td.style.fontSize = "20px"
+					}
+
+				} else {
+					if(i == 0){
+						td.innerHTML = "选择否的人数";
+						td.style.textAlign = "center";
+						td.style.color = "#292929";
+						td.style.fontSize = "20px"
+						td.style.width = "500px"
+					}else {
+						td.innerHTML = tmparr[1];
+						td.style.textAlign = "center";
+						td.style.color = "#292929";
+						td.style.fontSize = "20px"
+						td.style.width = "500px"
+					}
+				}
+				tr.appendChild(td);
+			}
+			tbody.appendChild(tr);
+		}
+		table.appendChild(tbody);
+		tbody.style.backgroundColor = "#F0FBCD";
+		table.style.margin = "46px 120px";
+		return table;
+	}
+
 	function createTableWithoutButton(width, height, line, arr) {
 		var table = document.createElement("table");
 		var tbody = document.createElement("tbody");
@@ -139,12 +213,10 @@
 		table.style.height = height;
 		table.style.border = 4;
 		var td;
-
 		for (var i = 0; i < arr.length; i++) {
 			var tr = document.createElement("tr");
 			for (var j = 0; j < line; ++j) {
 				td = document.createElement("td");
-
 				var tmparr = arr[i].split(":");
 				if (j == 0) {
 					td.innerHTML = tmparr[0];
@@ -168,6 +240,7 @@
 		table.style.margin = "46px 120px";
 		return table;
 	}
+
 
 	/**
 	 * 创建表格
@@ -216,9 +289,9 @@
 						{
 							getResultCount(i, arr);
 						}
-						else if(flag == 3) //
+						else if(flag == 3) //题目添加管理
 						{
-
+							questionManager(i, arr);
 						}
 
 
@@ -361,7 +434,7 @@
 					/**
 					 * arr.length 就可以获取到分隔后的元素每一个元素就是一个科目
 					 */
-					var type = "guan +";
+					var type = "管理 +";
 					var table = createTable(700, 130, 3, arr, type, 3);
 					document.getElementById("myDiv").innerHTML="选择需要管理题目的课程:";
 					$("#myDiv").append(table);
