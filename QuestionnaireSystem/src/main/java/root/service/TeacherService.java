@@ -1,15 +1,12 @@
 package root.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import root.dao.NaireDao;
 import root.dao.TeacherDao;
 import root.model.Naire;
 import root.model.ResCount;
 import root.model.Teacher;
-
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -326,6 +323,6 @@ public class TeacherService {
      * 获取所有课程，一般这个不变
      * @return
      */
-    public List<String> getALllSubject() { return naireDao.getAllSubjects(); }
+    public List<String> getAllSubject() { return naireDao.getAllSubjects(); }
 
 }

@@ -13,8 +13,6 @@ import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Vector;
 
-import static root.Util.StringAndListUtil.strToList;
-
 @Service
 public class StudentService {
     /**

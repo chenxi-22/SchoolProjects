@@ -1,8 +1,5 @@
 package root.web.controller;
 
-import com.mysql.jdbc.StringUtils;
-import com.mysql.jdbc.jmx.ReplicationGroupManager;
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +12,6 @@ import root.model.ResCount;
 import root.service.StudentService;
 import root.service.TeacherService;
 
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 @Controller("displayController")
@@ -151,6 +147,10 @@ public class DispalyController {
         return StringAndListUtil.listToStr(resList);
     }
 
+    /**
+     * 获取未完成问卷的科目
+     * @return
+     */
     @RequestMapping(value = "/uncomplete", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String UnComplete(){
@@ -253,16 +253,21 @@ public class DispalyController {
     }
 
     /**
-     * 催缴问卷
+     * 催缴问卷标题
      * @return
      */
     @RequestMapping(value = "/pressnaires", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
     @ResponseBody
     public String PressNaires() {
 
-        return StringAndListUtil.listToStr(teacherService.getALllSubject());
+        return StringAndListUtil.listToStr(teacherService.getAllSubject());
     }
 
+    /**
+     * 催缴问卷
+     * @param subject
+     * @return
+     */
     @RequestMapping(value = "/pressNaire", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
     @ResponseBody
     public String pressNaire(@RequestParam(value = "subject") String subject) {
@@ -276,92 +281,40 @@ public class DispalyController {
     }
 
     /**
-     * 添加问卷
+     * 添加问卷标题栏
      * @return
      */
     @RequestMapping(value = "/addnaires", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
     @ResponseBody
     public String AddNaires() {
-
-        return StringAndListUtil.listToStr(teacherService.getALllSubject());
+        return StringAndListUtil.listToStr(teacherService.getAllSubject());
     }
-
-    @RequestMapping(value = "/add", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
-    @ResponseBody
-    public String addque(@RequestParam(value = "subject") String subject, @RequestParam(value = "naire") String naire) {
-        /**
-         * 因为这里从网页中拿到的问题每个问题是以';'分隔
-         * 所以这里只需要将';'换为'\3'然后再更新到数据库就行
-         */
-        List<String> naireList = StringAndListUtil.ReplaceTo3AndStrToListWith(naire);
-
-        if(!teacherService.AddNaire(subject, naireList)){
-            return "faild";
-        }
-
-        return "success";
-
-    }
-
-
-//    @RequestMapping(value = "/addnaire", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
-//    public String addque(@RequestParam(value = "subject") String subject, @RequestParam(value = "naire") String naire) {
-//        /**
-//         * 因为这里从网页中拿到的问题每个问题是以';'分隔
-//         * 所以这里只需要将';'换为'\3'然后再更新到数据库就行
-//         */
-//        List<String> naireList = StringAndListUtil.ReplaceTo3AndStrToList(naire);
-//        if(!teacherService.AddNaire(subject, naireList)){
-//            return "faild";
-//        }
-//       return "success";
-//    }
-
-
 
     /**
-     * 统计结果
+     * 得到相关科目
      * @return
      */
     @RequestMapping(value = "/getResultCount", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
     @ResponseBody
     public String GetResultCount() {
-
-        return StringAndListUtil.listToStr(teacherService.getALllSubject());
+        return StringAndListUtil.listToStr(teacherService.getAllSubject());
     }
 
-
+    /**
+     * 问题答案统计
+     * @param subject
+     * @return
+     */
     @RequestMapping(value = "/questionmanag", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
     @ResponseBody
     public String GetResult(@RequestParam(value = "subject") String subject) {
         if(subject == null)
             return "subject null";
-//        List<ResCount> resCount = TeacherService.getResultCount(subject);
-//
-//        if (resCount == null || resCount.size() == 0) {
-//            return "noOneAnswer";
-//        }
-
-
-        // 测试代码
-        List<ResCount> testList = new Vector<ResCount>();
-        for(int i = 0; i <= 5; ++i){
-            ResCount tmp = new ResCount();
-            tmp._yesCount = i;
-            tmp._noCount = i;
-            testList.add(tmp);
-        }
-        TeacherService.resCountMap.put("chinese", testList);
-        TeacherService.resCountMap.put("english", testList);
-        TeacherService.resCountMap.put("math", testList);
 
         List<ResCount> resCount = TeacherService.getResultCount(subject);
         String resString = StringAndListUtil.CountToString(resCount);
         return resString;
     }
-
-
-
 
     /**
      * 题目添加管理
@@ -371,8 +324,47 @@ public class DispalyController {
     @ResponseBody
     public String QuestionManager() {
 
-        return StringAndListUtil.listToStr(teacherService.getALllSubject());
+        return StringAndListUtil.listToStr(teacherService.getAllSubject());
     }
+
+    /**
+     * 添加问卷问题
+     * @param subject
+     * @param ques
+     * @return
+     */
+    @RequestMapping(value = "/add2", method = RequestMethod.POST, produces="text/html;charset=UTF-8")
+    @ResponseBody
+    public String addque(@RequestParam(value = "subject") String subject, @RequestParam(value = "ques") String ques) {
+        System.out.println("in add que");
+        /**
+         * 因为这里从网页中拿到的问题每个问题是以';'分隔
+         * 所以这里只需要将';'换为'\3'然后再更新到数据库就行
+         */
+        List<String> naireList = StringAndListUtil.ReplaceTo3AndStrToListWith(ques);
+
+        if(!teacherService.AddNaire(subject, naireList)){
+            return "faild";
+        }
+        return StringAndListUtil.listToStr(teacherService.getAllSubject());
+    }
+
+    /**
+     * 管理问卷问题
+     * @param subject
+     * @return
+     */
+    @RequestMapping(value = "/m", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String managerNaire(@RequestParam(value = "subject")String subject) {
+        List<String> naires = studentService.getNaire(subject);
+        if (naires == null || naires.size() == 0 || naires.get(0).equals("")) {
+            return "nonaires";
+        }
+        return StringAndListUtil.listToStr(naires);
+    }
+
+
 }
 
 
