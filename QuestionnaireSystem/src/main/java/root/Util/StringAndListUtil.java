@@ -89,4 +89,13 @@ public class StringAndListUtil {
 
         return resString;
     }
+
+    /**
+     * 将';'换位'\3'
+     */
+    public static List<String> ReplaceTo3AndStrToListWith(String str){
+        String[] tmp = str.split(";");
+        return Arrays.asList(tmp);
+
+    }
 }

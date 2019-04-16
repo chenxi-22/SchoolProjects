@@ -57,9 +57,7 @@ public class Naire {
         return questionnaires;
     }
 
-    public void setQuestionnaires(List<String> questionnairesList) {
-        this.questionnaires = questionnaires;
-    }
+    public void setQuestionnaires(List<String> questionnairesList) { this.questionnaires = questionnairesList; }
 
     public List<String> getStudents() {
         return students;

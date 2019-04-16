@@ -52,8 +52,31 @@
 		xmlhttp.send();
 	}
 
-	function addNaire(id, arr) {
-		window.open ("http://http://localhost:8080/", 'newwindow', 'height=500, width=600, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=n o, status=no')
+	function addNaire(id, arr, que) {
+		$.ajax({
+			type: 'GET',
+			url: '/add',
+			data: { subject: arr[id],
+				    naire : que
+			},
+			success: function (result) {
+				$("#myDiv").empty();
+				alert("hahahha");
+				alert(result);
+				if (result == "success") {
+					document.getElementById("myDiv").innerHTML="问卷添加成功！";
+					return;
+				}
+				if(result == "faild"){
+					document.getElementById("myDiv").innerHTML="问卷添加失败！";
+					return;
+				}
+
+			},
+			error:function(result) {
+				alert("hahahhahahhahahahhahhha");
+			}
+		});
 
 	}
 
@@ -61,12 +84,9 @@
 		$.ajax({
 			type: 'GET',
 			url: '/questionmanag',
-			data: { subject: arr[id] },
+			data: { subject: arr[id]},
 			success: function (result) {
 				$("#myDiv").empty();
-				alert(arr[id]);
-				alert("hahahha");
-				alert(result);
 				if (result == "subject null") {
 					document.getElementById("myDiv").innerHTML="未知错误！！！";
 					return;
@@ -283,7 +303,9 @@
 						}
 						else if(flag == 1) //添加问卷
 						{
-							addNaire(i, arr);
+							// test
+							var str = "are you ok?;i m fine;thank you!"
+							addNaire(i, arr, str);
 						}
 						else if(flag == 2) //统计结果
 						{

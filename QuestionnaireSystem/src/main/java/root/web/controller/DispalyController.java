@@ -241,12 +241,36 @@ public class DispalyController {
         return StringAndListUtil.listToStr(teacherService.getALllSubject());
     }
 
-    @RequestMapping(value = "/addnaire", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
-    public ModelAndView addque() {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("addque");
-        return modelAndView;
+    @RequestMapping(value = "/add", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
+    @ResponseBody
+    public String addque(@RequestParam(value = "subject") String subject, @RequestParam(value = "naire") String naire) {
+        /**
+         * 因为这里从网页中拿到的问题每个问题是以';'分隔
+         * 所以这里只需要将';'换为'\3'然后再更新到数据库就行
+         */
+        List<String> naireList = StringAndListUtil.ReplaceTo3AndStrToListWith(naire);
+
+        if(!teacherService.AddNaire(subject, naireList)){
+            return "faild";
+        }
+
+        return "success";
+
     }
+
+
+//    @RequestMapping(value = "/addnaire", method = RequestMethod.GET, produces="text/html;charset=UTF-8")
+//    public String addque(@RequestParam(value = "subject") String subject, @RequestParam(value = "naire") String naire) {
+//        /**
+//         * 因为这里从网页中拿到的问题每个问题是以';'分隔
+//         * 所以这里只需要将';'换为'\3'然后再更新到数据库就行
+//         */
+//        List<String> naireList = StringAndListUtil.ReplaceTo3AndStrToList(naire);
+//        if(!teacherService.AddNaire(subject, naireList)){
+//            return "faild";
+//        }
+//       return "success";
+//    }
 
 
 
@@ -288,8 +312,6 @@ public class DispalyController {
 
         List<ResCount> resCount = TeacherService.getResultCount(subject);
         String resString = StringAndListUtil.CountToString(resCount);
-
-        System.out.println(resString);
         return resString;
     }
 
