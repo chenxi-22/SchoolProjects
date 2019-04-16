@@ -120,6 +120,13 @@ public class DispalyController {
         return StringAndListUtil.listToStr(canChoose);
     }
 
+    @RequestMapping(value = "/answer", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String AnswerQuestion(@RequestParam(value = "subject")String subject, @RequestParam(value = "result")String result) {
+
+    }
+
+
     /**
      * 浏览问卷
      * @param subject
