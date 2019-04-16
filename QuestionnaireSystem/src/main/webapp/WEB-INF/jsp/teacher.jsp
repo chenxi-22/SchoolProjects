@@ -52,32 +52,65 @@
 		xmlhttp.send();
 	}
 
-	function addNaire(id, arr, que) {
+	function SubmitQuestion(Question, subject) {
 		$.ajax({
-			type: 'GET',
-			url: '/add',
-			data: { subject: arr[id],
-				    naire : que
+			type: 'POST',
+			url: '/add2',
+			data: { subject: subject,
+				ques : Question
 			},
 			success: function (result) {
-				$("#myDiv").empty();
-				alert("hahahha");
-				alert(result);
-				if (result == "success") {
-					document.getElementById("myDiv").innerHTML="问卷添加成功！";
-					return;
-				}
-				if(result == "faild"){
-					document.getElementById("myDiv").innerHTML="问卷添加失败！";
-					return;
+			    if (result == "faild") {
+			    	alert("问卷上传失败！");
+			    	return;
 				}
 
+				alert("问卷上传成功！");
+				var arr = result.split("\3");
+				var type = "添加 +";
+				var table = createTable(700, 130, 3, arr, type, 1);
+				document.getElementById("myDiv").innerHTML="选择需要添加问卷的课程:";
+				$("#myDiv").append(table);
+			    return;
 			},
 			error:function(result) {
-				alert("hahahhahahhahahahhahhha");
+				alert("failed");
 			}
-		});
 
+		})
+	}
+
+	function addNaire(subject, naires) {
+	    var tagging = "请在一下输入框输入问题(每一个问题之间用英文的分号隔开 ';')<br>";
+		document.getElementById("myDiv").innerHTML=tagging;
+
+	    var Question = document.createElement("input");
+	    Question.type = "textarea";
+	    // Question.style.margin =  "100px 100px 100px 100px";
+        Question.style.width = "700px";
+        Question.style.height = "300px";
+        Question.value = naires;
+
+		var but = document.createElement("input");
+		but.type = "button";
+		but.value = "提交问题";
+		but.setAttribute("onmouseover","style.backgroundColor='#A9A9A9'");
+		but.setAttribute("onmouseout","style.backgroundColor='#9ACD32'");
+		but.style.color = "white";
+		but.style.fontSize = "12px";
+		but.style.backgroundColor = "#9ACD32";
+		but.style.borderColor = "#D3D3D3";
+		but.style.cursor = "pointer";
+		but.style.margin = "7px 80px 7px 80px";
+		but.style.width = "75px";
+		but.style.height = "25px";
+		but.onclick = function() {
+		    SubmitQuestion(Question.value, subject);
+		}
+
+		$("#myDiv").append(Question);
+		$("#myDiv").append("<br>");
+		$("#myDiv").append(but);
 	}
 
 	function getResultCount(id, arr) {
@@ -113,39 +146,35 @@
 	}
 
 	function questionManager(id, arr) {
-		var subject = arr[id];
-		var xmlhttp;
-		if (window.XMLHttpRequest)
-		{
-			// IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
-			xmlhttp=new XMLHttpRequest();
-		}
-		else
-		{
-			// IE6, IE5 浏览器执行代码
-			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-		}
-		xmlhttp.onreadystatechange=function()
-		{
-			if (xmlhttp.readyState==4 && xmlhttp.status==200)
-			{
-				var result = xmlhttp.responseText;
-				alert("添加管理成功");
-
-				if (result == "false") {
-					alert("添加管理失败失败！");
+		var subject = arr[id]
+	    $.ajax({
+			url: '/m',
+			type: 'POST',
+			data: {
+			    subject : subject
+			},
+			success: function (result) {
+			    if (result == "nonaires") {
+			        alert("该科目还没有添加问卷哦!")
 					return;
 				}
-				alert("统计成功！");
-				document.getElementById("myDiv").innerHTML="统计成功！";
-			} else {
-
-				document.getElementById("myDiv").innerHTML="统计失败！";
+			    arr = result.split("\3");
+			    var naires = "";
+			    for (var i = 0; i < arr.length; i++) {
+			        if (i == 0) {
+			            naires += arr[i];
+					} else {
+			            var tmp = ";" + arr[i]
+						naires += tmp;
+					}
+				}
+			    addNaire(subject, naires);
+			    return;
+			},
+			error:function(result) {
+				alert(result);
 			}
-		}
-		// 发送 GET 请求，带参数 subject
-		xmlhttp.open("GET","/questionManager?subject=" + subject, false);
-		xmlhttp.send();
+		})
 	}
 	/**
 	 * 创建表格
@@ -304,8 +333,10 @@
 						else if(flag == 1) //添加问卷
 						{
 							// test
-							var str = "are you ok?;i m fine;thank you!"
-							addNaire(i, arr, str);
+							// var str = "are you ok?;i m fine;thank you!"
+							var subject = arr[i];
+							var naires = "";
+							addNaire(subject, naires);
 						}
 						else if(flag == 2) //统计结果
 						{
