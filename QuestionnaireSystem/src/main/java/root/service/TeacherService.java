@@ -54,6 +54,7 @@ public class TeacherService {
     public void init(){
         maxQuestionCount = 20;
         subjectsList = naireDao.getAllSubjects();
+
     }
 
     public boolean Login(String id, String password){
@@ -228,9 +229,39 @@ public class TeacherService {
             return false;
         return true;
     }
-    // TODO 需要拿到前端问题的答案，回答问题的人需要从naireDao中的Uncompelete名单中删除
-    public void AnswerQuestion(String subject){
 
+    /**
+     * 这里只需要修改内存中的resCountMap
+     */
+    public boolean AnswerQuestion(String subject, List<String> ansList){
+        if(!IsSubExit(subject))
+        {
+            return false;
+        }
+
+        System.out.println(ansList.size());
+        for(String str : ansList){
+            System.out.println(str);
+        }
+        if(ansList == null || ansList.size() == 0 || ansList.get(0).equals(""))
+        {
+            System.out.println("##################");
+            return false;
+        }
+
+        int count = 1;
+        for(String str : ansList){
+            if(str.equals("yes")){
+                AddResultCount(subject, count, 1);
+                count++;
+            }
+            if(str.equals("no")){
+                AddResultCount(subject, count, 0);
+                count++;
+            }
+        }
+
+        return true;
     }
 
     /**

@@ -277,9 +277,7 @@ public class StudentService {
          * 从数据库拉取问卷信息
          * 保存在成员变量naire中
          */
-        System.out.println("getNaire " + item);
         String ques = naireDao.getQuestionnaires(naire);
-        System.out.println("getNaire" + ques);
         if (ques == null || ques == "") {
             return null;
         }
@@ -295,4 +293,84 @@ public class StudentService {
         List<ResCount> resCountList = TeacherService.getResultCount(item);
         return resCountList;
     }
+
+    /**
+     * 回答问题后学生需要进行的操作
+     * 1.将naireDao中该student的name从uncomplete中删除
+     * 2.再拿到该学生的已选科目，然后将这些科目在naireDao
+     *   中找到对应的uncomplete，若有该学生名单，则添加到
+     *   resList中。
+     */
+    public List<String> AnswerQuestion(String subject){
+        /**
+         * 1.将naireDao中该student的name从uncomplete中删除
+         */
+        System.out.println("into stude");
+        List<String> resList = new Vector<String>();
+        Naire naireTmp = new Naire();
+        naireTmp.setSubject(subject);
+        List<String> unList = naireDao.getUncompletes(naireTmp);
+        if(!(unList == null || unList.size() == 0 || unList.get(0) == "")){
+            unList = StringAndListUtil.deleteStr(unList, student.getName());
+        }
+
+        naireTmp.setUncompletes(unList);
+        System.out.println("into 2");
+        naireDao.UpdateUncompletes(naireTmp);
+        System.out.println("into 3");
+
+        /**
+         * 2.再拿到该学生的已选科目，然后将这些科目在naireDao
+         *   中找到对应的uncomplete，若有该学生名单，则添加到
+         *    resList中。
+         */
+        List<String> subListTmp = studentDao.getSubjects(student);
+
+
+        for(String str : subListTmp){
+            Naire naTmp = new Naire();
+            naTmp.setSubject(str);
+            List<String> unComList = naireDao.getUncompletes(naTmp);
+            if(null == unComList || 0 == unComList.size() || "" == unComList.get(0)){
+                continue;
+            }
+            for(String na : unComList){
+
+                if(na.equals(student.getName())){
+                    resList.add(str);
+                    break;
+                }
+            }
+        }
+
+        return resList;
+    }
+
+    public List<String> UNComplete() {
+        List<String> resList = new Vector<String>();
+        List<String> subListTmp = studentDao.getSubjects(student);
+        ;
+
+        for (String str : subListTmp) {
+            Naire naTmp = new Naire();
+            naTmp.setSubject(str);
+            List<String> unComList = naireDao.getUncompletes(naTmp);
+            if (null == unComList || 0 == unComList.size() || "" == unComList.get(0)) {
+                continue;
+            }
+            for (String na : unComList) {
+
+                if (na.equals(student.getName())) {
+                    resList.add(str);
+                    break;
+                }
+            }
+        }
+        return resList;
+    }
+
+
+
 }
+
+

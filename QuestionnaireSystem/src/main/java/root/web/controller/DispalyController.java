@@ -120,10 +120,49 @@ public class DispalyController {
         return StringAndListUtil.listToStr(canChoose);
     }
 
+    /**
+     * 回答问题
+     */
     @RequestMapping(value = "/answer", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String AnswerQuestion(@RequestParam(value = "subject")String subject, @RequestParam(value = "result")String result) {
 
+        if(subject == null || result == null)
+        {
+            System.out.println("$$$$$$$$$$$$$$$$$");
+            return "faild";
+        }
+        /**
+         * 前端传过来的答案是以';'格开，所以这里
+         * 需要去除分号后，保存到List<Sting>
+         */
+
+        if(!teacherService.AnswerQuestion(subject, StringAndListUtil.ReplaceTo3AndStrToListWith(result))){
+            return "faild";
+        }
+
+        List<String> resList = studentService.AnswerQuestion(subject);
+        if(resList == null || resList.size() == 0 || resList.get(0).equals("")) {
+            return "nosubjects";
+        }
+        /**
+         * resList转为String，以'\3'分隔
+         */
+        return StringAndListUtil.listToStr(resList);
+    }
+
+    @RequestMapping(value = "/uncomplete", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String UnComplete(){
+
+        List<String> resList = studentService.UNComplete();
+        if(resList == null || resList.size() == 0 || resList.get(0).equals("")) {
+            return "nosubjects";
+        }
+        /**
+         * resList转为String，以'\3'分隔
+         */
+        return StringAndListUtil.listToStr(resList);
     }
 
 
@@ -136,7 +175,6 @@ public class DispalyController {
     @ResponseBody
     public String seeNaire(@RequestParam(value = "subject") String subject) {
         List<String> questions = studentService.getNaire(subject);
-        System.out.println(questions);
         if (questions == null || questions.size() == 0 || questions.get(0).equals("")) {
             return "nonaires";
         }
