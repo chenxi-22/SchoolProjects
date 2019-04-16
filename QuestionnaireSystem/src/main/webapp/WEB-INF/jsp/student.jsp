@@ -112,7 +112,7 @@
 
 				arr = result.split("\3");
 				var  type = "浏览"
-				var table = createNaireTable(700, 140, 3, arr, type);
+				var table = createTable(700, 140, 3, arr, type);
 				document.getElementById("myDiv").innerHTML="以下问卷可浏览:";
 				$("#myDiv").append(table);
 			},
