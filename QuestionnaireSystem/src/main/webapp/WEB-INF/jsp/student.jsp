@@ -105,11 +105,14 @@
 			},
 			success: function (result) {
 				$("#myDiv").empty();
-				if (result == "nonaires") {
+				if (result == "nosubjects") {
 					$("#myDiv").get(0).innerHTML = "已经填写了所有问卷！";
 					return;
+				} else if (result == "faild") {
+					$("#myDiv").get(0).innerHTML = "提交失败！";
+					return;
 				}
-
+				alert("问卷已经提交！")
 				arr = result.split("\3");
 				var  type = "浏览"
 				var table = createTable(700, 140, 3, arr, type);
@@ -243,10 +246,11 @@
 	}
 
 	function seeNaire(i, arr) {
+	    var subject = arr[i];
 	    $.ajax({
 			type: 'POST',
 			url: '/see',
-			data: { subject: arr[i] },
+			data: { subject: subject },
 			success: function (result) {
 				$("#myDiv").empty();
 				if (result == "nonaires") {
@@ -256,7 +260,7 @@
 
 				arr = result.split("\3");
 				var resArray = new Array();
-				var table = createNaireTable(700, 140, 3, arr, resArray, arr[i]);
+				var table = createNaireTable(700, 140, 3, arr, resArray, subject);
 				document.getElementById("myDiv").innerHTML="问卷问题如下:";
 				$("#myDiv").append(table);
 			},
@@ -570,7 +574,7 @@
 					$("#myDiv").append(table);
 				}
 			}
-			xmlhttp.open("GET", "/choosed", false);
+			xmlhttp.open("GET", "/uncomplete", false);
 			xmlhttp.send();
 		} else {
 			xmlhttp.onreadystatechange=function()
