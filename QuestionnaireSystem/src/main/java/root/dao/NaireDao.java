@@ -127,7 +127,7 @@ public class NaireDao {
         } else {
             questionnaires = StringAndListUtil.listToStr(tmp);
         }
-        
+
         jdbcTemplate.update(sql, questionnaires, subject);
         return true;
     }
