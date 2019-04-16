@@ -64,9 +64,10 @@ public class TeacherService {
 
 
     private boolean IsSubExit(String subject){
-        for(Iterator it = subjectsList.iterator(); it.hasNext();) {
-            if(it.next() == subject)
+        for(String str : subjectsList) {
+            if(str.equals(subject)){
                 return true;
+            }
         }
         return false;
     }
@@ -101,6 +102,39 @@ public class TeacherService {
          */
         naire.setSubject(subject);
         naireDao.UpdatePress(naire);
+    }
+
+    /**
+     * 添加问卷
+     */
+    public boolean AddNaire(String subject, List<String> questionnaire){
+        if(!IsSubExit(subject))
+        {
+            return false;
+        }
+
+        if(questionnaire == null || questionnaire.size() == 0 || questionnaire.get(0).equals(""))
+        {
+            return false;
+        }
+
+        Naire nairetmp = new Naire();
+        nairetmp.setSubject(subject);
+        nairetmp.setQuestionnaires(questionnaire);
+        naireDao.UpdateQuestions(nairetmp);
+
+        /**
+         * 添加完问卷后，需要重新设置未答卷的学生
+         */
+
+        List<String> students = naireDao.getStudents(nairetmp);
+        if(students == null || students.size() == 0 || students.get(0).equals(""))
+        {
+            students = new Vector<>();
+        }
+        nairetmp.setUncompletes(students);
+        naireDao.UpdateUncompletes(nairetmp);
+        return true;
     }
 
     /**
