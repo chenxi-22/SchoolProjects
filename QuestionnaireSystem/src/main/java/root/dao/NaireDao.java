@@ -120,14 +120,6 @@ public class NaireDao {
         String subject = naire.getSubject();
         List<String> tmp = naire.getQuestionnaires();
 
-        /**
-         * test
-         */
-        List<String> questions = new Vector<>();
-        questions.add("你好吗？");
-        questions.add("你坏吗？");
-        questions.add("你吃了吗？");
-        questions.add("今天天气好吗？");
 
         String questionnaires = "";
         if (tmp == null || tmp.size() == 0 || tmp.get(0).equals("")) {
@@ -135,13 +127,7 @@ public class NaireDao {
         } else {
             questionnaires = StringAndListUtil.listToStr(tmp);
         }
-
-        /**
-         * test
-         */
-        questionnaires = StringAndListUtil.listToStr(questions);
-        subject = "chinese";
-
+        
         jdbcTemplate.update(sql, questionnaires, subject);
         return true;
     }
