@@ -13,63 +13,66 @@
 <link rel="stylesheet" href="/css/index.css" />
 <script type="text/javascript">
 
-	function createNaireTable(width, height, line, arr) {
+	function createTableWithoutButton_1(width, height, line, arr) {
 		var table = document.createElement("table");
 		var tbody = document.createElement("tbody");
-
 		table.style.width = width;
 		table.style.height = height;
 		table.style.border = 4;
-
 		var td;
-
-		for (var i = 0; i < arr.length + 1; i++) {
+		for (var i = 0; i <= arr.length; i++) {
 			var tr = document.createElement("tr");
 			for (var j = 0; j < line; ++j) {
 				td = document.createElement("td");
-				var rd;
-				var rd2;
+
+				if(i > 0){
+					var tmparr = arr[i-1].split(",");
+				}
+
 				if (j == 0) {
-					if (i == 0) {
-						td.innerHTML = "问题";
+					if(i == 0){
+						td.innerHTML = "问题编号";
 						td.style.textAlign = "center";
 						td.style.color = "#292929";
-						td.style.width = "580px"
+						td.style.width = "100px";
+						td.style.fontSize = "20px"
 					} else {
-						td.innerHTML = i + "." + arr[i - 1];
+						td.innerHTML = "第" + i + "题";
 						td.style.textAlign = "center";
 						td.style.color = "#292929";
-						td.style.width = "500px"
-					}
-				} else if (j == 1) {
-					if (i == 0) {
-						td.innerHTML = "是"
-						td.style.textAlign = "center";
-						td.style.color = "#292929";
-						td.style.width = "60px"
-					} else {
-						rd = document.createElement("input");
-						rd.type = "checkbox";
-						rd.value = "是";
-						rd.id = "yes";
-						rd.style.margin = "7px 70px 7px 70px";
-						td.appendChild(rd);
-					}
-				} else if (j == 2) {
-					if (i == 0) {
-						td.innerHTML = "否"
-						td.style.textAlign = "center";
-						td.style.color = "#292929";
-						td.style.width = "60px"
-					} else {
-						rd2 = document.createElement("input");
-						rd2.type = "checkbox";
-						rd2.value = "否";
-						rd2.id = "no";
-						rd2.style.margin = "7px 70px 7px 70px";
-						td.appendChild(rd2);
+						td.style.width = "100px";
+						td.style.fontSize = "20px"
 					}
 
+				} else if (j == 1) {
+					if(i == 0){
+						td.innerHTML = "选择是的人数";
+						td.style.textAlign = "center";
+						td.style.color = "#292929";
+						td.style.width = "300px";
+						td.style.fontSize = "20px"
+					}else {
+						td.innerHTML = tmparr[0];
+						td.style.textAlign = "center";
+						td.style.color = "#292929";
+						td.style.width = "300px";
+						td.style.fontSize = "20px"
+					}
+
+				} else {
+					if(i == 0){
+						td.innerHTML = "选择否的人数";
+						td.style.textAlign = "center";
+						td.style.color = "#292929";
+						td.style.fontSize = "20px"
+						td.style.width = "300px"
+					}else {
+						td.innerHTML = tmparr[1];
+						td.style.textAlign = "center";
+						td.style.color = "#292929";
+						td.style.fontSize = "20px"
+						td.style.width = "300px"
+					}
 				}
 				tr.appendChild(td);
 			}
@@ -81,12 +84,169 @@
 		return table;
 	}
 
+	function getAnswer(res, subject) {
+	    var answer = "";
+	    for (var i = 0; i < res.length; i++) {
+	        if (res[i].checked) {
+	            if (i == 0) {
+	            	answer += res[i].value;
+				} else {
+	            	var tmp = ";" + res[i].value;
+	            	answer += tmp;
+				}
+			}
+		}
+
+	    $.ajax({
+			type: 'POST',
+			url: '/answer',
+			data: { subject: subject,
+                	result : answer
+			},
+			success: function (result) {
+				$("#myDiv").empty();
+				if (result == "nonaires") {
+					$("#myDiv").get(0).innerHTML = "已经填写了所有问卷！";
+					return;
+				}
+
+				arr = result.split("\3");
+				var  type = "浏览"
+				var table = createNaireTable(700, 140, 3, arr, type);
+				document.getElementById("myDiv").innerHTML="以下问卷可浏览:";
+				$("#myDiv").append(table);
+			},
+			error:function(result) {
+				alert("failed");
+			}
+
+		})
+
+	}
+
+	function createNaireTable(width, height, line, arr, res, subject) {
+		var table = document.createElement("table");
+		var tbody = document.createElement("tbody");
+
+		table.style.width = width;
+		table.style.height = height;
+		table.style.border = 4;
+
+		for (var i = 0; i < 2 * arr.length; i++) {
+		    if (i % 2 == 0) {
+		        var rd = document.createElement("input");
+				rd.type = "radio";
+				rd.value = "yes";
+				rd.style.margin = "7px 30px 7px 30px";
+				rd.name = arr[i / 2];
+				rd.checked = true;
+				res.push(rd);
+			} else {
+				var rd = document.createElement("input");
+				rd.type = "radio";
+				rd.value = "no";
+				rd.style.margin = "7px 30px 7px 30px";
+				rd.name = arr[i / 2];
+				rd.checked = false;
+				res.push(rd);
+			}
+		}
+
+		var td;
+
+		for (var i = 0; i < arr.length + 1; i++) {
+			var tr = document.createElement("tr");
+
+			if (i > 0) {
+				res[2 * (i - 1)] = document.createElement("input");
+				res[2 * (i - 1)].type = "radio";
+				res[2 * (i - 1)].style.margin = "7px 30px 7px 30px";
+				res[2 * (i - 1)].value = "yes";
+				(function (i) {
+					res[2 * (i - 1)].name = arr[i - 1];
+				})(i);
+				res[2 * (i - 1)].checked = true;
+
+				res[2 * (i - 1) + 1] = document.createElement("input");
+				res[2 * (i - 1) + 1].type = "radio";
+				res[2 * (i - 1) + 1].style.margin = "7px 30px 7px 30px";
+				res[2 * (i - 1) + 1].value = "no";
+				(function (i) {
+					res[2 * (i - 1) + 1].name = arr[(i - 1)];
+				})(i);
+				res[2 * (i - 1) + 1].checked = false;
+			}
+
+			for (var j = 0; j < line; ++j) {
+				td = document.createElement("td");
+
+				if (j == 0) {
+					if (i == 0) {
+						td.innerHTML = "问题";
+						td.style.textAlign = "center";
+						td.style.color = "#292929";
+						td.style.width = "580px"
+					} else {
+						td.innerHTML = i + "." + arr[i - 1];
+						td.style.textAlign = "center";
+						td.style.color = "#292929";
+						td.style.width = "580px"
+					}
+				} else if (j == 1) {
+					if (i == 0) {
+						td.innerHTML = "是"
+						td.style.textAlign = "center";
+						td.style.color = "#292929";
+						td.style.width = "60px"
+					} else {
+						td.appendChild(res[2 * (i - 1)]);
+					}
+				} else if (j == 2) {
+					if (i == 0) {
+						td.innerHTML = "否"
+						td.style.textAlign = "center";
+						td.style.color = "#292929";
+						td.style.width = "60px"
+					} else {
+						td.appendChild(res[2 * (i - 1) + 1]);
+					}
+				}
+				tr.appendChild(td);
+			}
+			tbody.appendChild(tr);
+		}
+
+		var but = document.createElement("input");
+		but.type = "button";
+		but.value = "提交";
+		but.setAttribute("onmouseover","style.backgroundColor='#A9A9A9'");
+		but.setAttribute("onmouseout","style.backgroundColor='#9ACD32'");
+		but.style.color = "white";
+		but.style.fontSize = "12px";
+		but.style.backgroundColor = "#9ACD32";
+		but.style.borderColor = "#D3D3D3";
+		but.style.cursor = "pointer";
+		but.style.margin = "7px 80px 7px 80px";
+		but.style.width = "75px";
+		but.style.height = "25px";
+
+		but.onclick = function () {
+		    getAnswer(res, subject);
+		};
+
+		table.appendChild(but);
+		table.appendChild(tbody);
+		tbody.style.backgroundColor = "#F0FBCD";
+		table.style.margin = "46px 120px";
+
+		return table;
+	}
+
 	function seeNaire(i, arr) {
 	    $.ajax({
 			type: 'POST',
 			url: '/see',
 			data: { subject: arr[i] },
-            // contentType: "text/html;charset=UTF-8",
 			success: function (result) {
 				$("#myDiv").empty();
 				if (result == "nonaires") {
@@ -95,7 +255,8 @@
 				}
 
 				arr = result.split("\3");
-				var table = createNaireTable(700, 140, 3, arr);
+				var resArray = new Array();
+				var table = createNaireTable(700, 140, 3, arr, resArray, arr[i]);
 				document.getElementById("myDiv").innerHTML="问卷问题如下:";
 				$("#myDiv").append(table);
 			},
@@ -106,7 +267,34 @@
 	}
 
 	function seeResult(i, arr) {
-		alert(arr[i] + "结果");
+		$.ajax({
+			type: 'GET',
+			url: '/questionmanag',
+			data: { subject: arr[i] },
+			success: function (result) {
+				$("#myDiv").empty();
+				if (result == "subject null") {
+					document.getElementById("myDiv").innerHTML="未知错误！！！";
+					return;
+				}
+				if(result == "noOneAnswer"){
+					document.getElementById("myDiv").innerHTML="还没有人选择该课程！！！";
+					return;
+				}
+
+				/**
+				 * 每个答案之间用','分隔，每个问题用'\3'分隔
+				 * ','前面为选择是的人数，后面为选择否的人数
+				 */
+				var allQues = result.split("\3");
+				var table = createTableWithoutButton_1(700, 130, 3, allQues);
+				document.getElementById("myDiv").innerHTML="该课程问卷结果如下:";
+				$("#myDiv").append(table);
+			},
+			error:function(result) {
+				alert(result);
+			}
+		});
 	}
 
 	function deleteSubject(id, arr) {
@@ -372,13 +560,13 @@
 				{
 					var result = xmlhttp.responseText;
 					if (result == "nosubjects") {
-						document.getElementById("myDiv").innerHTML="还没有选择任何课程呢，怎么会有问卷呢?";
+						document.getElementById("myDiv").innerHTML="没有问卷可以浏览！请检查你是否选课或者已经答完了所有问卷！";
 						return;
 					}
 					var arr = result.split("\3");
 					var type = "浏览";
 					var table = createTable(700,130, 3, arr, type);
-					document.getElementById("myDiv").innerHTML="下面的问卷可以浏览:";
+					document.getElementById("myDiv").innerHTML="以下问卷可浏览:";
 					$("#myDiv").append(table);
 				}
 			}
