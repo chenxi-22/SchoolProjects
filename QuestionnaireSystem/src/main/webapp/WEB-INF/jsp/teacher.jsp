@@ -125,7 +125,7 @@
 					return;
 				}
 				if(result == "noOneAnswer"){
-					document.getElementById("myDiv").innerHTML="还没有人选择该课程！！！";
+					document.getElementById("myDiv").innerHTML="还没有人回答该课程！！！";
 					return;
 				}
 

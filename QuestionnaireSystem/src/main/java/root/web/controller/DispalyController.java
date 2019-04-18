@@ -312,7 +312,15 @@ public class DispalyController {
             return "subject null";
 
         List<ResCount> resCount = TeacherService.getResultCount(subject);
+        if(resCount == null || resCount.size() == 0)
+        {
+            return "noOneAnswer";
+        }
         String resString = StringAndListUtil.CountToString(resCount);
+        if(resString == null || resString.length() == 0 || resString.equals(""))
+        {
+            return "noOneAnswer";
+        }
         return resString;
     }
 
@@ -344,6 +352,11 @@ public class DispalyController {
         List<String> naireList = StringAndListUtil.ReplaceTo3AndStrToListWith(ques);
 
         if(!teacherService.AddNaire(subject, naireList)){
+            System.out.println("in to if 347");
+            System.out.println(subject);
+            for(String str : naireList){
+                System.out.println(str);
+            }
             return "faild";
         }
         return StringAndListUtil.listToStr(teacherService.getAllSubject());
