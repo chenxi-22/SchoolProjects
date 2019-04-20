@@ -1,5 +1,6 @@
 package root.web.controller;
 
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -125,7 +126,6 @@ public class DispalyController {
 
         if(subject == null || result == null)
         {
-            System.out.println("$$$$$$$$$$$$$$$$$");
             return "faild";
         }
         /**
@@ -138,6 +138,7 @@ public class DispalyController {
         }
 
         List<String> resList = studentService.AnswerQuestion(subject);
+
         if(resList == null || resList.size() == 0 || resList.get(0).equals("")) {
             return "nosubjects";
         }
@@ -312,6 +313,7 @@ public class DispalyController {
             return "subject null";
 
         List<ResCount> resCount = TeacherService.getResultCount(subject);
+
         if(resCount == null || resCount.size() == 0)
         {
             return "noOneAnswer";
@@ -344,7 +346,6 @@ public class DispalyController {
     @RequestMapping(value = "/add2", method = RequestMethod.POST, produces="text/html;charset=UTF-8")
     @ResponseBody
     public String addque(@RequestParam(value = "subject") String subject, @RequestParam(value = "ques") String ques) {
-        System.out.println("in add que");
         /**
          * 因为这里从网页中拿到的问题每个问题是以';'分隔
          * 所以这里只需要将';'换为'\3'然后再更新到数据库就行
@@ -352,11 +353,6 @@ public class DispalyController {
         List<String> naireList = StringAndListUtil.ReplaceTo3AndStrToListWith(ques);
 
         if(!teacherService.AddNaire(subject, naireList)){
-            System.out.println("in to if 347");
-            System.out.println(subject);
-            for(String str : naireList){
-                System.out.println(str);
-            }
             return "faild";
         }
         return StringAndListUtil.listToStr(teacherService.getAllSubject());

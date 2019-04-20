@@ -1,5 +1,6 @@
 package root.service;
 
+import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import root.dao.NaireDao;
@@ -9,6 +10,7 @@ import root.model.ResCount;
 import root.model.Teacher;
 
 import javax.annotation.PostConstruct;
+import javax.sound.midi.Receiver;
 import java.util.*;
 
 @Service
@@ -28,7 +30,7 @@ public class TeacherService {
      * 每个问卷默认问题数量最大为20
      */
     private int maxQuestionCount;
-    private static int staticMaxQuestionCount;
+    private static int staticMaxQuestionCount = 20;
 
     /**
      * 课程列表，所有管理员都一样
@@ -44,8 +46,7 @@ public class TeacherService {
      * 为static类型，所有实例化的类看到的都是一样的
      */
 
-    // TODO 这里为了方便测试将其改为public，记得改回private
-    public static Map<String, List<ResCount>> resCountMap = new HashMap<>();
+    private static Map<String, List<ResCount>> resCountMap = new HashMap<>();
 
     @PostConstruct
     public void init(){
@@ -221,7 +222,6 @@ public class TeacherService {
 
 
     private static boolean IsLegalInResultCountMap(String subject, int id){
-
         if(id < 0 || id >= staticMaxQuestionCount)
             return false;
         return true;
@@ -236,17 +236,16 @@ public class TeacherService {
             return false;
         }
 
-        System.out.println(ansList.size());
-        for(String str : ansList){
-            System.out.println(str);
-        }
         if(ansList == null || ansList.size() == 0 || ansList.get(0).equals(""))
         {
-            System.out.println("##################");
             return false;
         }
 
+        int size = ansList.size();
+        staticMaxQuestionCount = size;
+
         int count = 1;
+
         for(String str : ansList){
             if(str.equals("yes")){
                 AddResultCount(subject, count, 1);
@@ -258,6 +257,7 @@ public class TeacherService {
             }
         }
 
+
         return true;
     }
 
@@ -266,10 +266,11 @@ public class TeacherService {
      * @param id //表示问卷中问题的编号,从1开始
      */
     private static boolean AddResultCount(String subject, int id, int answer){
+        id = id - 1;
         /**
          * 因为数组下标从0开始，所以这里-1，方便判断
          */
-        if(!IsLegalInResultCountMap(subject, id-1)){
+        if(!IsLegalInResultCountMap(subject, id)){
             return false;
         }
         /**
@@ -277,20 +278,34 @@ public class TeacherService {
          * 所以需要将该元素插入
          */
         if(resCountMap.get(subject) == null){
-            ResCount resTmp = null;
-            resTmp._noCount = 0;
-            resTmp._yesCount = 0;
-            List<ResCount> resCountTmp = Collections.nCopies(staticMaxQuestionCount, resTmp);
+
+            List<ResCount> resCountTmp = new Vector<ResCount>();
+            for(int i = 0; i < staticMaxQuestionCount; ++i){
+                ResCount resTmp = new ResCount();
+                resTmp._noCount = 0;
+                resTmp._yesCount = 0;
+                resCountTmp.add(resTmp);
+            }
             resCountMap.put(subject, resCountTmp);
         }
 
-        if(0 == answer) {
-            ++resCountMap.get(subject).get(id)._yesCount;
-        }
-        else{
-            ++resCountMap.get(subject).get(id)._noCount;
-        }
 
+        if(1 == answer) {
+            List<ResCount> tmpList = resCountMap.get(subject);
+           ResCount rrr = resCountMap.get(subject).get(id);
+           rrr._yesCount += 1;
+
+           tmpList.set(id, rrr);
+           resCountMap.put(subject, tmpList);
+;
+        } else{
+            List<ResCount> tmpList = resCountMap.get(subject);
+            ResCount rrr = resCountMap.get(subject).get(id);
+            rrr._noCount += 1;
+
+            tmpList.set(id, rrr);
+            resCountMap.put(subject, tmpList);
+        }
 
         return true;
     }

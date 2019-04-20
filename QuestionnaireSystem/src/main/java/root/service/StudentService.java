@@ -303,7 +303,6 @@ public class StudentService {
         /**
          * 1.将naireDao中该student的name从uncomplete中删除
          */
-        System.out.println("into stude");
         List<String> resList = new Vector<String>();
         Naire naireTmp = new Naire();
         naireTmp.setSubject(subject);
@@ -313,9 +312,7 @@ public class StudentService {
         }
 
         naireTmp.setUncompletes(unList);
-        System.out.println("into 2");
         naireDao.UpdateUncompletes(naireTmp);
-        System.out.println("into 3");
 
         /**
          * 2.再拿到该学生的已选科目，然后将这些科目在naireDao
