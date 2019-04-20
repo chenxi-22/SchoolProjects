@@ -88,7 +88,7 @@
 	    var answer = "";
 	    for (var i = 0; i < res.length; i++) {
 	        if (res[i].checked) {
-	            if (i == 0) {
+	            if (answer == "") {
 	            	answer += res[i].value;
 				} else {
 	            	var tmp = ";" + res[i].value;

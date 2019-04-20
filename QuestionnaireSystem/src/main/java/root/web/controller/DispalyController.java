@@ -50,7 +50,6 @@ public class DispalyController {
             if (res == false) {
                 modelAndView.setViewName("loginfailed");
             } else {
-                System.out.println("into col");
                 List<String> press = studentService.getPressSubjectList();
                 if (press == null || press.size() == 0 || press.get(0).equals("")) {
                     modelAndView.setViewName("student");
@@ -134,7 +133,9 @@ public class DispalyController {
          * 需要去除分号后，保存到List<Sting>
          */
 
-        if(!teacherService.AnswerQuestion(subject, StringAndListUtil.ReplaceTo3AndStrToListWith(result))){
+        List<String> ansList = StringAndListUtil.ReplaceTo3AndStrToListWith(result);
+
+        if(!teacherService.AnswerQuestion(subject, ansList)){
             return "faild";
         }
 
