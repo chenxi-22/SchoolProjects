@@ -40,6 +40,7 @@ public class StudentService {
      * 用来获取需要催缴问卷的课程列表
      */
     public List<String> getPressSubjectList(){
+        System.out.println("into stu");
         /**
          * 保存naireDao中IsPress为1的科目列表
          */
@@ -65,6 +66,10 @@ public class StudentService {
             }
         }
 
+        for(String str : pressSubjectList){
+            System.out.println(str);
+        }
+
         /**
          * 根据pressSubjectList，去naireDao中根据课程名拿到
          * 未完成的学生名单与之相比，如果姓名与自己相同，则需要
@@ -74,7 +79,7 @@ public class StudentService {
             naire.setSubject(str);
             List<String> uncompletesListTmp = naireDao.getUncompletes(naire);
             if (uncompletesListTmp == null || uncompletesListTmp.size() == 0 || uncompletesListTmp.get(0).equals("")) {
-                return null;
+                continue;
             }
             if(uncompletesListTmp.indexOf(student.getName()) != -1){
                 pressSubjectResList.add(str);

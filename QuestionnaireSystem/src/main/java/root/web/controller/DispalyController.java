@@ -50,6 +50,7 @@ public class DispalyController {
             if (res == false) {
                 modelAndView.setViewName("loginfailed");
             } else {
+                System.out.println("into col");
                 List<String> press = studentService.getPressSubjectList();
                 if (press == null || press.size() == 0 || press.get(0).equals("")) {
                     modelAndView.setViewName("student");
