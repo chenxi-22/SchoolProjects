@@ -150,7 +150,7 @@ public class NaireDao {
      * @return
      */
     public boolean UpdatePress(Naire naire) {
-        String sql = "UPDATE questionnaire_system.naires SET questionnaires=1 WHERE subject=?";
+        String sql = "UPDATE questionnaire_system.naires SET ispress=1 WHERE subject=?";
         String subject = naire.getSubject();
         jdbcTemplate.update(sql, subject);
         return true;
